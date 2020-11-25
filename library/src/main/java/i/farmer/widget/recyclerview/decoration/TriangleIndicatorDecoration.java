@@ -129,6 +129,15 @@ public class TriangleIndicatorDecoration extends RecyclerView.ItemDecoration {
      * @see androidx.viewpager.widget.ViewPager
      */
     public void attach(RecyclerView tab, ViewPager viewPager) {
+        if (null == tab || null == tab.getAdapter()) {
+            throw new IllegalArgumentException("RecyclerView or RecyclerView adapter can not be NULL !!");
+        }
+        if (null == viewPager || null == viewPager.getAdapter()) {
+            throw new IllegalArgumentException("ViewPager2 or ViewPager2 adapter can not be NULL !!");
+        }
+        if (tab.getAdapter().getItemCount() != viewPager.getAdapter().getCount()) {
+            throw new IllegalArgumentException("Tab length must be the same as the page count !");
+        }
         this.mTab = tab;
         tab.addItemDecoration(this);
         if (null == pageChangeCallback) {
@@ -159,6 +168,15 @@ public class TriangleIndicatorDecoration extends RecyclerView.ItemDecoration {
      * @see androidx.viewpager2.widget.ViewPager2
      */
     public void attach(RecyclerView tab, ViewPager2 viewPager) {
+        if (null == tab || null == tab.getAdapter()) {
+            throw new IllegalArgumentException("RecyclerView or RecyclerView adapter can not be NULL !!");
+        }
+        if (null == viewPager || null == viewPager.getAdapter()) {
+            throw new IllegalArgumentException("ViewPager2 or ViewPager2 adapter can not be NULL !!");
+        }
+        if (tab.getAdapter().getItemCount() != viewPager.getAdapter().getItemCount()) {
+            throw new IllegalArgumentException("Tab length must be the same as the page count !");
+        }
         this.mTab = tab;
         tab.addItemDecoration(this);
         if (null == pageChangeCallback2) {
@@ -211,13 +229,24 @@ public class TriangleIndicatorDecoration extends RecyclerView.ItemDecoration {
         private int indicatorHeight = 0;                // 指示器高度
         private int indicatorPadding = 10;              // 指示器跟item之间的间距
         private int itemSpacing = 0;                    // item跟item之间的间距
+        private Context context;
+
+        public Builder() {
+        }
+
+        public Builder(Context context) {
+            this.context = context;
+        }
 
         public Builder setColor(int color) {
             this.indicatorColor = color;
             return this;
         }
 
-        public Builder setColor(Context context, @ColorRes int color) {
+        public Builder setColorRes(@ColorRes int color) {
+            if (null == context) {
+                throw new IllegalArgumentException("Context can not be null!");
+            }
             this.indicatorColor = context.getResources().getColor(color);
             return this;
         }
@@ -227,7 +256,10 @@ public class TriangleIndicatorDecoration extends RecyclerView.ItemDecoration {
             return this;
         }
 
-        public Builder setWidth(Context context, @DimenRes int width) {
+        public Builder setWidthRes(@DimenRes int width) {
+            if (null == context) {
+                throw new IllegalArgumentException("Context can not be null!");
+            }
             this.indicatorWidth = context.getResources().getDimensionPixelOffset(width);
             return this;
         }
@@ -237,7 +269,10 @@ public class TriangleIndicatorDecoration extends RecyclerView.ItemDecoration {
             return this;
         }
 
-        public Builder setHeight(Context context, @DimenRes int height) {
+        public Builder setHeightRes(@DimenRes int height) {
+            if (null == context) {
+                throw new IllegalArgumentException("Context can not be null!");
+            }
             this.indicatorHeight = context.getResources().getDimensionPixelOffset(height);
             return this;
         }
@@ -247,7 +282,10 @@ public class TriangleIndicatorDecoration extends RecyclerView.ItemDecoration {
             return this;
         }
 
-        public Builder setIndicatorPadding(Context context, @DimenRes int padding) {
+        public Builder setIndicatorPaddingRes(@DimenRes int padding) {
+            if (null == context) {
+                throw new IllegalArgumentException("Context can not be null!");
+            }
             this.indicatorPadding = context.getResources().getDimensionPixelOffset(padding);
             return this;
         }
@@ -257,7 +295,10 @@ public class TriangleIndicatorDecoration extends RecyclerView.ItemDecoration {
             return this;
         }
 
-        public Builder setItemSpacing(Context context, @DimenRes int itemSpacing) {
+        public Builder setItemSpacingRes(@DimenRes int itemSpacing) {
+            if (null == context) {
+                throw new IllegalArgumentException("Context can not be null!");
+            }
             this.itemSpacing = context.getResources().getDimensionPixelOffset(itemSpacing);
             return this;
         }
