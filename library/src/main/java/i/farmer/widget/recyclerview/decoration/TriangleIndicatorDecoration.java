@@ -1,0 +1,278 @@
+package i.farmer.widget.recyclerview.decoration;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.Rect;
+import android.os.Handler;
+import android.os.Message;
+import android.view.View;
+
+import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
+
+/**
+ * @author i-farmer
+ * @created-time 2020/11/25 12:02 PM
+ * @description 三角形指示器
+ * 建议配合 @link i.farmer.widget.recyclerview.manager.CenterLinearLayoutManager 使用
+ */
+public class TriangleIndicatorDecoration extends RecyclerView.ItemDecoration {
+
+    private RecyclerView mTab;
+    private ViewPager.OnPageChangeListener pageChangeCallback = null;
+    private ViewPager2.OnPageChangeCallback pageChangeCallback2 = null;
+    private Handler handler = null;
+
+    private int indicatorWidth;                     // 指示器宽度
+    private int indicatorHeight;                    // 指示器高度
+    private int indicatorPadding;                   // 指示器跟item之间的间距
+    private int itemSpacing;                        // item跟item之间的间距
+
+    private Paint indicatorPaint;
+    private Path indicatorPath;
+
+    private int oldPosition = 0;                    // 当前位置
+    private int currentPosition = 0;                // 当前位置
+    private float currentPositionOffset = 0f;       // 当前位置偏移量系数（0～1）
+
+    public TriangleIndicatorDecoration(int color, int width, int height, int indicatorPadding, int itemSpacing) {
+        this.indicatorWidth = width;
+        this.indicatorHeight = height;
+        this.indicatorPadding = indicatorPadding;
+        this.itemSpacing = itemSpacing;
+        this.indicatorPaint = new Paint();
+        this.indicatorPaint.setColor(color);
+        this.indicatorPaint.setAntiAlias(true);
+        this.indicatorPaint.setStyle(Paint.Style.FILL);
+        this.indicatorPath = new Path();
+    }
+
+    @Override
+    public void onDrawOver(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+        super.onDrawOver(c, parent, state);
+
+        LinearLayoutManager layoutManager = (LinearLayoutManager) parent.getLayoutManager();
+        int activePosition = layoutManager.findFirstVisibleItemPosition();
+        if (activePosition == RecyclerView.NO_POSITION) {
+            // 没有数据
+            return;
+        }
+        View oldView = layoutManager.findViewByPosition(this.oldPosition);
+        if (null == oldView) {
+            // 找不到
+            return;
+        }
+        int position;
+        if (this.currentPosition == this.oldPosition) {
+            position = this.oldPosition + 1;
+        } else {
+            position = this.currentPosition;
+        }
+        View currentView = layoutManager.findViewByPosition(position);
+        int centerNewView;
+        if (null == currentView) {
+            // 如果为空，就拿上一个item的宽度来计算
+            if (this.currentPosition == this.oldPosition) {
+                // 往右
+                centerNewView = (int) (oldView.getRight() + itemSpacing + (oldView.getRight() - oldView.getLeft()) * 1.f / 2);
+            } else {
+                // 往左
+                centerNewView = (int) (oldView.getLeft() - itemSpacing - (oldView.getRight() - oldView.getLeft()) * 1.f / 2);
+            }
+        } else {
+            centerNewView = (int) ((currentView.getLeft() + currentView.getRight()) * 1.f / 2);
+        }
+        int centerOldView = (int) ((oldView.getLeft() + oldView.getRight()) * 1.f / 2);
+        int distance = Math.abs(centerOldView - centerNewView);
+        int start;
+        if (this.oldPosition > this.currentPosition) {
+            // 往左
+            start = (int) (centerNewView + distance * 1.f * currentPositionOffset - indicatorWidth * 1.f / 2);
+        } else {
+            // 往右
+            start = (int) (centerOldView + distance * 1.f * currentPositionOffset - indicatorWidth * 1.f / 2);
+        }
+
+        this.indicatorPath.reset();
+        // 绘制指示器
+        int parentHeight = parent.getHeight();
+        this.indicatorPath.moveTo(start, parentHeight);
+        this.indicatorPath.lineTo(start + indicatorWidth, parentHeight);
+        this.indicatorPath.lineTo(start + indicatorWidth / 2, parentHeight - indicatorHeight);
+        this.indicatorPath.close();
+        c.drawPath(this.indicatorPath, this.indicatorPaint);
+    }
+
+    @Override
+    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+        super.getItemOffsets(outRect, view, parent, state);
+        int childPosition = parent.getChildAdapterPosition(view);
+        int itemCount = parent.getAdapter().getItemCount();
+
+        // 增加间隔
+        outRect.left = itemSpacing;
+        outRect.right = childPosition == itemCount - 1 ? itemSpacing : 0;
+        // 增加指示器高度，以及间隔
+        outRect.bottom = indicatorHeight + indicatorPadding;
+    }
+
+    /**
+     * @param tab
+     * @param viewPager 跟ViewPager配合使用
+     * @see androidx.viewpager.widget.ViewPager
+     */
+    public void attach(RecyclerView tab, ViewPager viewPager) {
+        this.mTab = tab;
+        tab.addItemDecoration(this);
+        if (null == pageChangeCallback) {
+            pageChangeCallback = new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                    TriangleIndicatorDecoration.this.onPageScrolled(position, positionOffset, positionOffsetPixels);
+                }
+
+                @Override
+                public void onPageSelected(int position) {
+                    TriangleIndicatorDecoration.this.onPageSelected(position);
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int state) {
+                    // NO-OP
+                }
+            };
+        }
+        viewPager.removeOnPageChangeListener(pageChangeCallback);
+        viewPager.addOnPageChangeListener(pageChangeCallback);
+    }
+
+    /**
+     * @param tab
+     * @param viewPager 跟ViewPager2配合使用
+     * @see androidx.viewpager2.widget.ViewPager2
+     */
+    public void attach(RecyclerView tab, ViewPager2 viewPager) {
+        this.mTab = tab;
+        tab.addItemDecoration(this);
+        if (null == pageChangeCallback2) {
+            pageChangeCallback2 = new ViewPager2.OnPageChangeCallback() {
+                @Override
+                public void onPageSelected(int position) {
+                    super.onPageSelected(position);
+                    TriangleIndicatorDecoration.this.onPageSelected(position);
+                }
+
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                    super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+                    TriangleIndicatorDecoration.this.onPageScrolled(position, positionOffset, positionOffsetPixels);
+                }
+            };
+        }
+        viewPager.unregisterOnPageChangeCallback(pageChangeCallback2);
+        viewPager.registerOnPageChangeCallback(pageChangeCallback2);
+    }
+
+    private void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        this.currentPosition = position;
+        this.currentPositionOffset = positionOffset;
+        this.mTab.invalidate();
+    }
+
+    private void onPageSelected(int position) {
+        TriangleIndicatorDecoration.this.oldPosition = position;
+        getHandler().sendEmptyMessageDelayed(77, 200);
+    }
+
+    private Handler getHandler() {
+        if (null == handler) {
+            handler = new Handler() {
+                @Override
+                public void handleMessage(@NonNull Message msg) {
+                    TriangleIndicatorDecoration.this.mTab.smoothScrollToPosition(oldPosition);
+                }
+            };
+        } else {
+            handler.removeMessages(77);
+        }
+        return handler;
+    }
+
+    public static class Builder {
+        private int indicatorColor = 0XFF1A1A1A;        // 指示器颜色
+        private int indicatorWidth = 18;                // 指示器宽度
+        private int indicatorHeight = 0;                // 指示器高度
+        private int indicatorPadding = 10;              // 指示器跟item之间的间距
+        private int itemSpacing = 0;                    // item跟item之间的间距
+
+        public Builder setColor(int color) {
+            this.indicatorColor = color;
+            return this;
+        }
+
+        public Builder setColor(Context context, @ColorRes int color) {
+            this.indicatorColor = context.getResources().getColor(color);
+            return this;
+        }
+
+        public Builder setWidth(int width) {
+            this.indicatorWidth = width;
+            return this;
+        }
+
+        public Builder setWidth(Context context, @DimenRes int width) {
+            this.indicatorWidth = context.getResources().getDimensionPixelOffset(width);
+            return this;
+        }
+
+        public Builder setHeight(int height) {
+            this.indicatorHeight = height;
+            return this;
+        }
+
+        public Builder setHeight(Context context, @DimenRes int height) {
+            this.indicatorHeight = context.getResources().getDimensionPixelOffset(height);
+            return this;
+        }
+
+        public Builder setIndicatorPadding(int padding) {
+            this.indicatorPadding = padding;
+            return this;
+        }
+
+        public Builder setIndicatorPadding(Context context, @DimenRes int padding) {
+            this.indicatorPadding = context.getResources().getDimensionPixelOffset(padding);
+            return this;
+        }
+
+        public Builder setItemSpacing(int itemSpacing) {
+            this.itemSpacing = itemSpacing;
+            return this;
+        }
+
+        public Builder setItemSpacing(Context context, @DimenRes int itemSpacing) {
+            this.itemSpacing = context.getResources().getDimensionPixelOffset(itemSpacing);
+            return this;
+        }
+
+        public TriangleIndicatorDecoration build() {
+            if (this.indicatorHeight <= 0) {
+                this.indicatorHeight = this.indicatorWidth / 2;
+            }
+            return new TriangleIndicatorDecoration(
+                    this.indicatorColor,
+                    this.indicatorWidth,
+                    this.indicatorHeight,
+                    this.indicatorPadding,
+                    this.itemSpacing
+            );
+        }
+    }
+}
