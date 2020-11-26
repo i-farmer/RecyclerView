@@ -41,8 +41,8 @@ public class IndicatorDecoration extends RecyclerView.ItemDecoration {
     private int indicatorHeight;                    // 指示器高度
     private int indicatorPadding;                   // 指示器跟item之间的间距
     private int itemSpacing;                        // item跟item之间的间距
-    private int paddingLeft;                        // item头部间距
-    private int paddingRight;                       // item尾部的间距
+    private int paddingStart;                       // item头部间距
+    private int paddingEnd;                         // item尾部的间距
 
     private Paint indicatorPaint;
     private Path indicatorPath;
@@ -60,14 +60,14 @@ public class IndicatorDecoration extends RecyclerView.ItemDecoration {
     }
 
     public IndicatorDecoration(int color, int width, int height, int indicatorPadding,
-                               int itemSpacing, int paddingLeft, int paddingRight,
+                               int itemSpacing, int paddingStart, int paddingEnd,
                                int staticShape, int scrollShape) {
         this.indicatorWidth = width;
         this.indicatorHeight = height;
         this.indicatorPadding = indicatorPadding;
         this.itemSpacing = itemSpacing;
-        this.paddingLeft = paddingLeft;
-        this.paddingRight = paddingRight;
+        this.paddingStart = paddingStart;
+        this.paddingEnd = paddingEnd;
         this.staticShape = staticShape;
         this.scrollShape = scrollShape;
 
@@ -157,8 +157,8 @@ public class IndicatorDecoration extends RecyclerView.ItemDecoration {
         int itemCount = parent.getAdapter().getItemCount();
 
         // 增加间隔
-        outRect.left = (childPosition == 0 && paddingLeft >= 0) ? paddingLeft : itemSpacing;
-        outRect.right = childPosition == itemCount - 1 ? (paddingRight >= 0 ? paddingRight : itemSpacing) : 0;
+        outRect.left = (childPosition == 0 && paddingStart >= 0) ? paddingStart : itemSpacing;
+        outRect.right = childPosition == itemCount - 1 ? (paddingEnd >= 0 ? paddingEnd : itemSpacing) : 0;
         // 增加指示器高度，以及间隔
         outRect.bottom = indicatorHeight + indicatorPadding;
     }
@@ -269,12 +269,18 @@ public class IndicatorDecoration extends RecyclerView.ItemDecoration {
         private int indicatorHeight = 0;                // 指示器高度
         private int indicatorPadding = 10;              // 指示器跟item之间的间距
         private int itemSpacing = 0;                    // item跟item之间的间距
-        private int paddingLeft = -1;                   // item头部间距
-        private int paddingRight = -1;                  // item尾部的间距
+        private int paddingStart = -1;                  // item头部间距
+        private int paddingEnd = -1;                    // item尾部的间距
         private Context context;
         private int staticShape = SHAPE_TRIANGLE;       // 静止时候的形状
         private int scrollShape = SHAPE_TRIANGLE;       // 滚动时候的形状
 
+
+        private void checkContext() {
+            if (null == context) {
+                throw new IllegalArgumentException("Context can not be null!");
+            }
+        }
 
         public Builder() {
         }
@@ -283,13 +289,9 @@ public class IndicatorDecoration extends RecyclerView.ItemDecoration {
             this.context = context;
         }
 
-
         public Builder setShape(@ShapeMode int shape) {
-            this.staticShape = shape;
-            this.scrollShape = shape;
-            return this;
+            return setShape(shape, shape);
         }
-
 
         public Builder setShape(@ShapeMode int staticShape, @ShapeMode int scrollShape) {
             this.staticShape = staticShape;
@@ -303,37 +305,32 @@ public class IndicatorDecoration extends RecyclerView.ItemDecoration {
         }
 
         public Builder setColorRes(@ColorRes int color) {
-            if (null == context) {
-                throw new IllegalArgumentException("Context can not be null!");
-            }
-            this.indicatorColor = context.getResources().getColor(color);
-            return this;
+            checkContext();
+            int c = context.getResources().getColor(color);
+            return setColor(c);
         }
 
-        public Builder setWidth(int width) {
+        public Builder setSize(int width) {
+            return setSize(width, width / 2);
+        }
+
+        public Builder setSize(int width, int height) {
             this.indicatorWidth = width;
-            return this;
-        }
-
-        public Builder setWidthRes(@DimenRes int width) {
-            if (null == context) {
-                throw new IllegalArgumentException("Context can not be null!");
-            }
-            this.indicatorWidth = context.getResources().getDimensionPixelOffset(width);
-            return this;
-        }
-
-        public Builder setHeight(int height) {
             this.indicatorHeight = height;
             return this;
         }
 
-        public Builder setHeightRes(@DimenRes int height) {
-            if (null == context) {
-                throw new IllegalArgumentException("Context can not be null!");
-            }
-            this.indicatorHeight = context.getResources().getDimensionPixelOffset(height);
-            return this;
+        public Builder setSizeRes(@DimenRes int width) {
+            checkContext();
+            int w = context.getResources().getDimensionPixelOffset(width);
+            return setSize(w);
+        }
+
+        public Builder setSizeRes(@DimenRes int width, @DimenRes int height) {
+            checkContext();
+            int w = context.getResources().getDimensionPixelOffset(width);
+            int h = context.getResources().getDimensionPixelOffset(height);
+            return setSize(w, h);
         }
 
         public Builder setIndicatorPadding(int padding) {
@@ -342,11 +339,9 @@ public class IndicatorDecoration extends RecyclerView.ItemDecoration {
         }
 
         public Builder setIndicatorPaddingRes(@DimenRes int padding) {
-            if (null == context) {
-                throw new IllegalArgumentException("Context can not be null!");
-            }
-            this.indicatorPadding = context.getResources().getDimensionPixelOffset(padding);
-            return this;
+            checkContext();
+            int p = context.getResources().getDimensionPixelOffset(padding);
+            return setIndicatorPadding(p);
         }
 
         public Builder setItemSpacing(int itemSpacing) {
@@ -355,51 +350,42 @@ public class IndicatorDecoration extends RecyclerView.ItemDecoration {
         }
 
         public Builder setItemSpacingRes(@DimenRes int itemSpacing) {
-            if (null == context) {
-                throw new IllegalArgumentException("Context can not be null!");
-            }
-            this.itemSpacing = context.getResources().getDimensionPixelOffset(itemSpacing);
+            checkContext();
+            int s = context.getResources().getDimensionPixelOffset(itemSpacing);
+            return setItemSpacing(s);
+        }
+
+        public Builder setPadding(int padding) {
+            this.paddingStart = this.paddingEnd = padding;
             return this;
         }
 
-        public Builder setPaddingHorizontal(int paddingHorizontal) {
-            this.paddingLeft = this.paddingRight = paddingHorizontal;
+        public Builder setPaddingRes(@DimenRes int padding) {
+            checkContext();
+            int p = context.getResources().getDimensionPixelOffset(padding);
+            return setPadding(p);
+        }
+
+        public Builder setPaddingStart(int start) {
+            this.paddingStart = start;
             return this;
         }
 
-        public Builder setPaddingHorizontalRes(@DimenRes int paddingHorizontal) {
-            if (null == context) {
-                throw new IllegalArgumentException("Context can not be null!");
-            }
-            this.paddingLeft = this.paddingRight
-                    = context.getResources().getDimensionPixelOffset(paddingHorizontal);
+        public Builder setPaddingStartRes(@DimenRes int start) {
+            checkContext();
+            int p = context.getResources().getDimensionPixelOffset(start);
+            return setPaddingStart(p);
+        }
+
+        public Builder setPaddingEnd(int end) {
+            this.paddingEnd = end;
             return this;
         }
 
-        public Builder setPaddingLeft(int paddingLeft) {
-            this.paddingLeft = paddingLeft;
-            return this;
-        }
-
-        public Builder setPaddingLeftRes(@DimenRes int paddingLeft) {
-            if (null == context) {
-                throw new IllegalArgumentException("Context can not be null!");
-            }
-            this.paddingLeft = context.getResources().getDimensionPixelOffset(paddingLeft);
-            return this;
-        }
-
-        public Builder setPaddingRight(int paddingRight) {
-            this.paddingRight = paddingRight;
-            return this;
-        }
-
-        public Builder setPaddingRightRes(@DimenRes int paddingRight) {
-            if (null == context) {
-                throw new IllegalArgumentException("Context can not be null!");
-            }
-            this.paddingRight = context.getResources().getDimensionPixelOffset(paddingRight);
-            return this;
+        public Builder setPaddingEndRes(@DimenRes int end) {
+            checkContext();
+            int p = context.getResources().getDimensionPixelOffset(end);
+            return setPaddingEnd(p);
         }
 
         public IndicatorDecoration build() {
@@ -412,8 +398,8 @@ public class IndicatorDecoration extends RecyclerView.ItemDecoration {
                     this.indicatorHeight,
                     this.indicatorPadding,
                     this.itemSpacing,
-                    this.paddingLeft,
-                    this.paddingRight,
+                    this.paddingStart,
+                    this.paddingEnd,
                     this.staticShape,
                     this.scrollShape
             );
