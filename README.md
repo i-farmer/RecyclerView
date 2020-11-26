@@ -45,8 +45,8 @@
     或者
   Builder.setPaddingEndRes(@DimenRes int end) 
 8.完整示例
-new TriangleIndicatorDecoration.Builder(this)
-  .setShape(TriangleIndicatorDecoration.SHAPE_OVAL)
+new IndicatorDecoration.Builder(this)
+  .setShape(IndicatorDecoration.SHAPE_OVAL)
   .setColorRes(R.color.colorPrimary)          // 使用Res资源，必须使用构造器传入Context
   .setSizeRes(R.dimen.x22, R.dimen.x10)
   .setIndicatorPaddingRes(R.dimen.x10)
@@ -54,8 +54,8 @@ new TriangleIndicatorDecoration.Builder(this)
   .setPadingRes(R.dimen.x30)
   .build();
 
-new TriangleIndicatorDecoration.Builder()
-  .setShape(TriangleIndicatorDecoration.SHAPE_OVAL)
+new IndicatorDecoration.Builder()
+  .setShape(IndicatorDecoration.SHAPE_OVAL)
   .setColor(Color.parseColor("#1A1A1A"))
   .setSize(22, 10)
   .setIndicatorPadding(10)
@@ -66,5 +66,5 @@ new TriangleIndicatorDecoration.Builder()
 9.绑定RecyclerView
   RecyclerView.addItemDecoration方法
 10.绑定 androidx.viewpager.widget.ViewPager、或者androidx.viewpager2.widget.ViewPager2
-  TriangleIndicatorDecoration.attach
+  IndicatorDecoration.attach
 ```
