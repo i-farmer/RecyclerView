@@ -11,11 +11,15 @@ import android.view.View;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * @author i-farmer
@@ -24,6 +28,9 @@ import androidx.viewpager2.widget.ViewPager2;
  * 建议配合 @link i.farmer.widget.recyclerview.manager.CenterLinearLayoutManager 使用
  */
 public class TriangleIndicatorDecoration extends RecyclerView.ItemDecoration {
+    public static final int SHAPE_TRIANGLE = 0;     // 三角形
+    public static final int SHAPE_OVAL = 1;         // 圆形
+    public static final int SHAPE_ROUND_RECT = 2;   // 圆角矩形
 
     private RecyclerView mTab;
     private ViewPager.OnPageChangeListener pageChangeCallback = null;
@@ -34,6 +41,8 @@ public class TriangleIndicatorDecoration extends RecyclerView.ItemDecoration {
     private int indicatorHeight;                    // 指示器高度
     private int indicatorPadding;                   // 指示器跟item之间的间距
     private int itemSpacing;                        // item跟item之间的间距
+    private int itemSpacingHeader;                  // item头部间距
+    private int itemSpacingFooter;                  // item尾部的间距
 
     private Paint indicatorPaint;
     private Path indicatorPath;
@@ -42,11 +51,26 @@ public class TriangleIndicatorDecoration extends RecyclerView.ItemDecoration {
     private int currentPosition = 0;                // 当前位置
     private float currentPositionOffset = 0f;       // 当前位置偏移量系数（0～1）
 
-    public TriangleIndicatorDecoration(int color, int width, int height, int indicatorPadding, int itemSpacing) {
+    private int staticShape;                        // 静止时候的形状
+    private int scrollShape;                        // 滚动时候的形状
+
+    @IntDef({SHAPE_TRIANGLE, SHAPE_OVAL, SHAPE_ROUND_RECT})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ShapeMode {
+    }
+
+    public TriangleIndicatorDecoration(int color, int width, int height, int indicatorPadding,
+                                       int itemSpacing, int itemSpacingHeader, int itemSpacingFooter,
+                                       int staticShape, int scrollShape) {
         this.indicatorWidth = width;
         this.indicatorHeight = height;
         this.indicatorPadding = indicatorPadding;
         this.itemSpacing = itemSpacing;
+        this.itemSpacingHeader = itemSpacingHeader;
+        this.itemSpacingFooter = itemSpacingFooter;
+        this.staticShape = staticShape;
+        this.scrollShape = scrollShape;
+
         this.indicatorPaint = new Paint();
         this.indicatorPaint.setColor(color);
         this.indicatorPaint.setAntiAlias(true);
@@ -99,26 +123,42 @@ public class TriangleIndicatorDecoration extends RecyclerView.ItemDecoration {
             // 往右
             start = (int) (centerOldView + distance * 1.f * currentPositionOffset - indicatorWidth * 1.f / 2);
         }
-
-        this.indicatorPath.reset();
+        int shape = currentPositionOffset == 0 ? staticShape : scrollShape;
         // 绘制指示器
+        this.indicatorPath.reset();
         int parentHeight = parent.getHeight();
-        this.indicatorPath.moveTo(start, parentHeight);
-        this.indicatorPath.lineTo(start + indicatorWidth, parentHeight);
-        this.indicatorPath.lineTo(start + indicatorWidth / 2, parentHeight - indicatorHeight);
-        this.indicatorPath.close();
+        if (shape == SHAPE_OVAL) {
+            // 圆
+            this.indicatorPath.addCircle(start + indicatorWidth / 2,
+                    parentHeight - indicatorHeight / 2,
+                    indicatorHeight / 2,
+                    Path.Direction.CW);
+        } else if (shape == SHAPE_ROUND_RECT) {
+            // 圆角矩形
+            float radius = indicatorHeight / 2;
+            this.indicatorPath.addRoundRect(start,
+                    parentHeight - indicatorHeight,
+                    start + indicatorWidth,
+                    parentHeight,
+                    radius, radius, Path.Direction.CW);
+        } else {
+            // 箭头
+            this.indicatorPath.moveTo(start, parentHeight);
+            this.indicatorPath.lineTo(start + indicatorWidth, parentHeight);
+            this.indicatorPath.lineTo(start + indicatorWidth / 2, parentHeight - indicatorHeight);
+            this.indicatorPath.close();
+        }
         c.drawPath(this.indicatorPath, this.indicatorPaint);
     }
 
     @Override
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-        super.getItemOffsets(outRect, view, parent, state);
         int childPosition = parent.getChildAdapterPosition(view);
         int itemCount = parent.getAdapter().getItemCount();
 
         // 增加间隔
-        outRect.left = itemSpacing;
-        outRect.right = childPosition == itemCount - 1 ? itemSpacing : 0;
+        outRect.left = (childPosition == 0 && itemSpacingHeader >= 0) ? itemSpacingHeader : itemSpacing;
+        outRect.right = childPosition == itemCount - 1 ? (itemSpacingFooter >= 0 ? itemSpacingFooter : itemSpacing) : 0;
         // 增加指示器高度，以及间隔
         outRect.bottom = indicatorHeight + indicatorPadding;
     }
@@ -229,13 +269,32 @@ public class TriangleIndicatorDecoration extends RecyclerView.ItemDecoration {
         private int indicatorHeight = 0;                // 指示器高度
         private int indicatorPadding = 10;              // 指示器跟item之间的间距
         private int itemSpacing = 0;                    // item跟item之间的间距
+        private int itemSpacingHeader = -1;             // item头部间距
+        private int itemSpacingFooter = -1;             // item尾部的间距
         private Context context;
+        private int staticShape = SHAPE_TRIANGLE;       // 静止时候的形状
+        private int scrollShape = SHAPE_TRIANGLE;       // 滚动时候的形状
+
 
         public Builder() {
         }
 
         public Builder(Context context) {
             this.context = context;
+        }
+
+
+        public Builder setShape(@ShapeMode int shape) {
+            this.staticShape = shape;
+            this.scrollShape = shape;
+            return this;
+        }
+
+
+        public Builder setShape(@ShapeMode int staticShape, @ShapeMode int scrollShape) {
+            this.staticShape = staticShape;
+            this.scrollShape = scrollShape;
+            return this;
         }
 
         public Builder setColor(int color) {
@@ -303,6 +362,20 @@ public class TriangleIndicatorDecoration extends RecyclerView.ItemDecoration {
             return this;
         }
 
+        public Builder setPaddingHorizontal(int paddingHorizontal) {
+            this.itemSpacingHeader = this.itemSpacingFooter = paddingHorizontal;
+            return this;
+        }
+
+        public Builder setPaddingHorizontalRes(@DimenRes int paddingHorizontal) {
+            if (null == context) {
+                throw new IllegalArgumentException("Context can not be null!");
+            }
+            this.itemSpacingHeader = this.itemSpacingFooter
+                    = context.getResources().getDimensionPixelOffset(paddingHorizontal);
+            return this;
+        }
+
         public TriangleIndicatorDecoration build() {
             if (this.indicatorHeight <= 0) {
                 this.indicatorHeight = this.indicatorWidth / 2;
@@ -312,7 +385,11 @@ public class TriangleIndicatorDecoration extends RecyclerView.ItemDecoration {
                     this.indicatorWidth,
                     this.indicatorHeight,
                     this.indicatorPadding,
-                    this.itemSpacing
+                    this.itemSpacing,
+                    this.itemSpacingHeader,
+                    this.itemSpacingFooter,
+                    this.staticShape,
+                    this.scrollShape
             );
         }
     }
