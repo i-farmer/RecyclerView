@@ -59,9 +59,9 @@ public class IndicatorDecoration extends RecyclerView.ItemDecoration {
     public @interface ShapeMode {
     }
 
-    public IndicatorDecoration(int color, int width, int height, int indicatorPadding,
-                               int itemSpacing, int paddingStart, int paddingEnd,
-                               int staticShape, int scrollShape) {
+    private IndicatorDecoration(int color, int width, int height, int indicatorPadding,
+                                int itemSpacing, int paddingStart, int paddingEnd,
+                                int staticShape, int scrollShape) {
         this.indicatorWidth = width;
         this.indicatorHeight = height;
         this.indicatorPadding = indicatorPadding;
@@ -168,7 +168,7 @@ public class IndicatorDecoration extends RecyclerView.ItemDecoration {
      * @param viewPager 跟ViewPager配合使用
      * @see androidx.viewpager.widget.ViewPager
      */
-    public void attach(RecyclerView tab, ViewPager viewPager) {
+    private void attach(RecyclerView tab, ViewPager viewPager) {
         if (null == tab || null == tab.getAdapter()) {
             throw new IllegalArgumentException("RecyclerView or RecyclerView adapter can not be NULL !!");
         }
@@ -207,7 +207,7 @@ public class IndicatorDecoration extends RecyclerView.ItemDecoration {
      * @param viewPager 跟ViewPager2配合使用
      * @see androidx.viewpager2.widget.ViewPager2
      */
-    public void attach(RecyclerView tab, ViewPager2 viewPager) {
+    private void attach(RecyclerView tab, ViewPager2 viewPager) {
         if (null == tab || null == tab.getAdapter()) {
             throw new IllegalArgumentException("RecyclerView or RecyclerView adapter can not be NULL !!");
         }
@@ -245,7 +245,7 @@ public class IndicatorDecoration extends RecyclerView.ItemDecoration {
     }
 
     private void onPageSelected(int position) {
-        IndicatorDecoration.this.oldPosition = position;
+        this.oldPosition = position;
         getHandler().sendEmptyMessageDelayed(77, 200);
     }
 
@@ -388,7 +388,7 @@ public class IndicatorDecoration extends RecyclerView.ItemDecoration {
             return setPaddingEnd(p);
         }
 
-        public IndicatorDecoration build() {
+        private IndicatorDecoration build() {
             if (this.indicatorHeight <= 0) {
                 this.indicatorHeight = this.indicatorWidth / 2;
             }
@@ -403,6 +403,14 @@ public class IndicatorDecoration extends RecyclerView.ItemDecoration {
                     this.staticShape,
                     this.scrollShape
             );
+        }
+
+        public void attach(RecyclerView tab, ViewPager viewPager) {
+            build().attach(tab, viewPager);
+        }
+
+        public void attach(RecyclerView tab, ViewPager2 viewPager) {
+            build().attach(tab, viewPager);
         }
     }
 }
