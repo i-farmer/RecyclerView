@@ -26,6 +26,7 @@ import java.lang.annotation.RetentionPolicy;
  * @created-time 2020/11/25 12:02 PM
  * @description 指示器，支持三角形、圆形、圆角矩形，默认三角形
  * 建议配合 @link i.farmer.widget.recyclerview.manager.CenterLinearLayoutManager 使用
+ * 目前不支持 smooth，即ViewPager.setCurrentItem(position)，请使用 ViewPager.setCurrentItem(position, false)
  */
 public class IndicatorDecoration extends RecyclerView.ItemDecoration {
     public static final int SHAPE_TRIANGLE = 0;     // 三角形
@@ -246,6 +247,8 @@ public class IndicatorDecoration extends RecyclerView.ItemDecoration {
 
     private void onPageSelected(int position) {
         this.oldPosition = position;
+        this.currentPosition = position;    // 1
+        this.currentPositionOffset = 0;     // 2   1、2两行是为了解决ViewPager.setCurrentItem(position, false);
         getHandler().sendEmptyMessageDelayed(77, 200);
     }
 

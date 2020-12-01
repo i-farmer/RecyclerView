@@ -68,3 +68,6 @@ new IndicatorDecoration.Builder()
 10.绑定 androidx.viewpager.widget.ViewPager、或者androidx.viewpager2.widget.ViewPager2
   IndicatorDecoration.attach
 ```
+```
+注意：目前不支持 smooth，即ViewPager.setCurrentItem(position)，请使用 ViewPager.setCurrentItem(position, false)
+```
