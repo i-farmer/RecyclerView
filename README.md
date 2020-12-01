@@ -52,7 +52,7 @@ new IndicatorDecoration.Builder(this)
   .setIndicatorPaddingRes(R.dimen.x10)
   .setItemSpacingRes(R.dimen.x16)
   .setPadingRes(R.dimen.x30)
-  .build();
+  .attach(RecycerView view, ViewPager pager);//  .attach(RecycerView view, ViewPager2 pager);
 
 new IndicatorDecoration.Builder()
   .setShape(IndicatorDecoration.SHAPE_OVAL)
@@ -61,12 +61,9 @@ new IndicatorDecoration.Builder()
   .setIndicatorPadding(10)
   .setItemSpacing(16)
   .setPading(30)
-  .build();
+  .attach(RecycerView view, ViewPager pager);  //  .attach(RecycerView view, ViewPager2 pager);
   以上两种方式可以交叉使用，其中指示器高度，可以不传入，默认为宽度的一半
-9.绑定RecyclerView
-  RecyclerView.addItemDecoration方法
-10.绑定 androidx.viewpager.widget.ViewPager、或者androidx.viewpager2.widget.ViewPager2
-  IndicatorDecoration.attach
+
 ```
 ```
 注意：目前不支持 smooth，即ViewPager.setCurrentItem(position)，请使用 ViewPager.setCurrentItem(position, false)
