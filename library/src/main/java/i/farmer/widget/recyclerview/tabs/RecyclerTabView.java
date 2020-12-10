@@ -90,13 +90,17 @@ public class RecyclerTabView extends RecyclerView {
         setLayoutManager(mLayoutManager);
         // 增加指示器
         if (indicatorStyle == INDICATOR_STYLE_LINE) {
-            addItemDecoration(new LineIndicator(indicatorColor, indicatorWidth, indicatorHeight, indicatorPadding, itemSpacing));
+            addItemDecoration(new LineIndicator(indicatorColor, indicatorWidth, indicatorHeight, itemSpacing));
         } else if (indicatorStyle == INDICATOR_STYLE_FULL_LINE) {
-            addItemDecoration(new FullLineIndicator(indicatorColor, indicatorWidth, indicatorHeight, indicatorPadding, itemSpacing));
+            addItemDecoration(new FullLineIndicator(indicatorColor, indicatorWidth, indicatorHeight, itemSpacing));
         }
         // 增加间距
         if (itemSpacing > 0 || tabPaddingStart > 0 || tabPaddingEnd > 0) {
-            addItemDecoration(new LinearSpacingDecoration(itemSpacing, tabPaddingStart, tabPaddingEnd));
+            if (mLayoutManager.getOrientation() == HORIZONTAL) {
+                addItemDecoration(new LinearSpacingDecoration(itemSpacing, tabPaddingStart, 0, tabPaddingEnd, indicatorPadding));
+            } else {
+                addItemDecoration(new LinearSpacingDecoration(itemSpacing, 0, tabPaddingStart, indicatorPadding, tabPaddingEnd));
+            }
         }
         // 不需要动画
         setItemAnimator(null);

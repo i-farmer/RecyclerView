@@ -14,13 +14,14 @@ import androidx.recyclerview.widget.RecyclerView;
  */
 public class LinearSpacingDecoration extends RecyclerView.ItemDecoration {
     private int itemSpacing;            // 每个item之间的间距
-    private int paddingStart;           // 整个tab的paddingStart
-    private int paddingEnd;             // 整个tab的paddingEnd
+    private int paddingLeft, paddingTop, paddingRight, paddingBottom;           // 整个tab的padding
 
-    public LinearSpacingDecoration(int itemSpacing, int paddingStart, int paddingEnd) {
+    public LinearSpacingDecoration(int itemSpacing, int paddingLeft, int paddingTop, int paddingRight, int paddingBottom) {
         this.itemSpacing = itemSpacing;
-        this.paddingStart = paddingStart;
-        this.paddingEnd = paddingEnd;
+        this.paddingLeft = paddingLeft;
+        this.paddingTop = paddingTop;
+        this.paddingRight = paddingRight;
+        this.paddingBottom = paddingBottom;
     }
 
     @Override
@@ -36,12 +37,16 @@ public class LinearSpacingDecoration extends RecyclerView.ItemDecoration {
 
         if (layoutManager.getOrientation() == LinearLayoutManager.HORIZONTAL) {
             // 横向
-            outRect.left = position == 0 ? paddingStart : 0;
-            outRect.right = position == totalCount - 1 ? paddingEnd : itemSpacing;
+            outRect.left = position == 0 ? paddingLeft : 0;
+            outRect.top = paddingTop;
+            outRect.right = position == totalCount - 1 ? paddingRight : itemSpacing;
+            outRect.bottom = paddingBottom;
         } else {
             // 竖向
-            outRect.top = position == 0 ? paddingStart : 0;
-            outRect.bottom = position == totalCount - 1 ? paddingEnd : itemSpacing;
+            outRect.left = paddingLeft;
+            outRect.top = position == 0 ? paddingTop : 0;
+            outRect.right = paddingRight;
+            outRect.bottom = position == totalCount - 1 ? paddingBottom : itemSpacing;
         }
     }
 }
