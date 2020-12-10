@@ -14,9 +14,10 @@ import androidx.recyclerview.widget.RecyclerView;
 class TriangleIndicator extends RecyclerTabViewIndicator {
     private int mIndicatorWidth = 42;
     private int mIndicatorHeight = 12;
+    private boolean mIndicatorSmoothCircle;
     private Path mIndicatorPath;
 
-    public TriangleIndicator(@ColorInt int color, int width, int height, int spacing) {
+    public TriangleIndicator(boolean smoothCircle, @ColorInt int color, int width, int height, int spacing) {
         super(false, color, spacing);
         if (width > 0) {
             this.mIndicatorWidth = width;
@@ -24,6 +25,7 @@ class TriangleIndicator extends RecyclerTabViewIndicator {
         if (height > 0) {
             this.mIndicatorHeight = height;
         }
+        this.mIndicatorSmoothCircle = smoothCircle;
         this.mIndicatorPath = new Path();
     }
 
@@ -38,20 +40,30 @@ class TriangleIndicator extends RecyclerTabViewIndicator {
     }
 
     @Override
-    protected void drawIndicator(RecyclerView parent, boolean horizontal, Canvas canvas, float center, float size) {
-        this.mIndicatorPath.reset();
-        // 箭头
-        if (horizontal) {
-            this.mIndicatorPath.moveTo(center - size / 2, parent.getBottom());
-            this.mIndicatorPath.lineTo(center + size / 2, parent.getBottom());
-            this.mIndicatorPath.lineTo(center, parent.getBottom() - mIndicatorHeight);
+    protected void drawIndicator(RecyclerView parent, boolean selected, boolean horizontal, Canvas canvas, float center, float size) {
+        if (selected || !this.mIndicatorSmoothCircle) {
+            // 箭头
+            this.mIndicatorPath.reset();
+            if (horizontal) {
+                this.mIndicatorPath.moveTo(center - size / 2, parent.getBottom());
+                this.mIndicatorPath.lineTo(center + size / 2, parent.getBottom());
+                this.mIndicatorPath.lineTo(center, parent.getBottom() - mIndicatorHeight);
+            } else {
+                this.mIndicatorPath.moveTo(parent.getRight(), center - size / 2);
+                this.mIndicatorPath.lineTo(parent.getRight(), center + size / 2);
+                this.mIndicatorPath.lineTo(parent.getRight() - mIndicatorWidth, center);
+            }
             this.mIndicatorPath.close();
+            canvas.drawPath(this.mIndicatorPath, this.mIndicatorPaint);
         } else {
-            this.mIndicatorPath.moveTo(parent.getRight(), center - size / 2);
-            this.mIndicatorPath.lineTo(parent.getRight(), center + size / 2);
-            this.mIndicatorPath.lineTo(parent.getRight() - mIndicatorWidth, center);
-            this.mIndicatorPath.close();
+            // 滑动过程中
+            if (horizontal) {
+                float r = mIndicatorHeight / 2;
+                canvas.drawCircle(center, parent.getBottom() - r, r, this.mIndicatorPaint);
+            } else {
+                float r = mIndicatorWidth / 2;
+                canvas.drawCircle(parent.getRight() - r, center, r, this.mIndicatorPaint);
+            }
         }
-        canvas.drawPath(this.mIndicatorPath, this.mIndicatorPaint);
     }
 }

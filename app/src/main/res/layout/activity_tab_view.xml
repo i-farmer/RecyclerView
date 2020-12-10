@@ -16,6 +16,7 @@
         app:indicatorGap="always"
         app:indicatorHeight="@dimen/x12"
         app:indicatorIncludeSpacing="true"
+        app:indicatorSmoothCircle="true"
         app:indicatorStyle="triangle"
         app:indicatorWidth="@dimen/x28"
         app:itemSpacing="@dimen/x40"

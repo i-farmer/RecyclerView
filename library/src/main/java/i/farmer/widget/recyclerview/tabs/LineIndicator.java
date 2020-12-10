@@ -39,7 +39,7 @@ class LineIndicator extends RecyclerTabViewIndicator {
     }
 
     @Override
-    protected void drawIndicator(RecyclerView parent, boolean horizontal, Canvas canvas, float center, float size) {
+    protected void drawIndicator(RecyclerView parent, boolean selected, boolean horizontal, Canvas canvas, float center, float size) {
         if (horizontal) {
             canvas.drawRoundRect(center - size / 2,
                     parent.getBottom() - mIndicatorHeight,

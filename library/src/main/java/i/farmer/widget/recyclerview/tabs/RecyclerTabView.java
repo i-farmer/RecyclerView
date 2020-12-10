@@ -47,6 +47,7 @@ public class RecyclerTabView extends RecyclerView {
         int indicatorWidth = 0;
         int indicatorHeight = 0;
         int indicatorPadding = 0;                   // 指示器同tabItem之间的间距
+        boolean indicatorSmoothCircle = false;      // 在滑动过程中，是否绘制小圆点指示器，目前只有在三角形指示器中可用
         int itemSpacing = 0;                        // 每个item之间的间距
         int tabPaddingStart = 0;                    // 整个tab的paddingStart
         int tabPaddingEnd = 0;                      // 整个tab的paddingEnd
@@ -63,6 +64,7 @@ public class RecyclerTabView extends RecyclerView {
                 indicatorWidth = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_indicatorWidth, indicatorWidth);
                 indicatorHeight = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_indicatorHeight, indicatorHeight);
                 indicatorPadding = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_indicatorPadding, indicatorPadding);
+                indicatorSmoothCircle = typedArray.getBoolean(R.styleable.RecyclerTabView_indicatorSmoothCircle, indicatorSmoothCircle);
                 itemSpacing = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_itemSpacing, itemSpacing);
                 int tabPadding = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_tabPadding, 0);
                 tabPaddingStart = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_tabPaddingStart, tabPadding);
@@ -98,7 +100,7 @@ public class RecyclerTabView extends RecyclerView {
         } else if (indicatorStyle == INDICATOR_STYLE_FULL_LINE) {
             addItemDecoration(new FullLineIndicator(includeGap, includeSpacing, indicatorColor, indicatorWidth, indicatorHeight, itemSpacing));
         } else if (indicatorStyle == INDICATOR_STYLE_TRIANGLE) {
-            addItemDecoration(new TriangleIndicator(indicatorColor, indicatorWidth, indicatorHeight, itemSpacing));
+            addItemDecoration(new TriangleIndicator(indicatorSmoothCircle, indicatorColor, indicatorWidth, indicatorHeight, itemSpacing));
         }
         // 增加间距
         if (itemSpacing > 0 || tabPaddingStart > 0 || tabPaddingEnd > 0) {

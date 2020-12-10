@@ -21,6 +21,7 @@
             <enum name="never" value="0" />
             <enum name="always" value="1" />
         </attr>
+        <attr name="indicatorSmoothCircle" format="boolean" />  <!--在滑动过程中，是否绘制小圆点指示器，目前只有在三角形指示器中可用-->
         <attr name="itemSpacing" /> <!--item间距-->
         <attr name="tabPaddingStart" /> <!--所有Item的外边距-->
         <attr name="tabPaddingEnd" /> <!--所有Item的外边距-->

@@ -120,7 +120,7 @@ abstract class RecyclerTabViewIndicator extends RecyclerView.ItemDecoration {
         // 计算指示器中间点
         float center = (positionEnd + positionStart) / 2 + distance * positionOffset;
 
-        drawIndicator(parent, horizontal, c, center, size + gap);
+        drawIndicator(parent, positionOffset == 0, horizontal, c, center, size + gap);
     }
 
     /**
@@ -148,12 +148,13 @@ abstract class RecyclerTabViewIndicator extends RecyclerView.ItemDecoration {
      * 绘制指示器
      *
      * @param parent
+     * @param selected   是否选中
      * @param horizontal
      * @param canvas
      * @param center
      * @param size
      */
-    protected abstract void drawIndicator(RecyclerView parent, boolean horizontal, Canvas canvas, float center, float size);
+    protected abstract void drawIndicator(RecyclerView parent, boolean selected, boolean horizontal, Canvas canvas, float center, float size);
 
     private void checkView(View view) {
         if (null == view) {
