@@ -105,14 +105,8 @@ class LineIndicator extends RecyclerTabViewIndicator {
         final float positionOffset = this.scrollPositionOffset;
         float size = horizontal ? mIndicatorWidth : mIndicatorHeight;     // 指示器大小
         float gap = (distance - size) * (positionOffset < 0.5 ? positionOffset : (1 - positionOffset));
-
         // 计算起始点
-        float start = (positionStart + positionEnd) / 2 + distance * positionOffset - size / 2 - gap / 2;
-        if (start < (positionStart + positionEnd) / 2 - size / 2) {
-            start = (positionStart + positionEnd) / 2 - size / 2;
-        } else if (start + size + gap > (positionStart + positionEnd) / 2 + distance + size / 2) {
-            start = (positionStart + positionEnd) / 2 + distance + size / 2;
-        }
+        float start = (positionEnd + positionStart) / 2 + distance * positionOffset - size / 2 - gap / 2;
 
         drawIndicator(parent, horizontal, c, start, size + gap);
     }
