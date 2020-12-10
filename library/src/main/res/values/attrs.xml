@@ -10,6 +10,7 @@
             <enum name="none" value="0" />  <!--可以自定义指示器-->
             <enum name="line" value="1" />  <!--线条指示器-->
             <enum name="fullLine" value="2" />  <!--同tabItem等宽线条指示器-->
+            <enum name="triangle" value="3" />  <!--三角形指示器-->
         </attr>
         <attr name="indicatorColor" format="color" />
         <attr name="indicatorWidth" format="dimension" />

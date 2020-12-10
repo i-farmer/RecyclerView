@@ -22,9 +22,9 @@ import i.farmer.widget.recyclerview.manager.CenterLinearLayoutManager;
  * @description 基于RecyclerView实现的TabLayout，同时支持横向、竖向
  */
 public class RecyclerTabView extends RecyclerView {
-    private final int INDICATOR_STYLE_NONE = 0;                     // 用外部指示器
     private final int INDICATOR_STYLE_LINE = 1;                     // 线条指示器
     private final int INDICATOR_STYLE_FULL_LINE = 2;                // 同tabItem等宽线条指示器
+    private final int INDICATOR_STYLE_TRIANGLE = 3;                 // 三角指示器
 
     protected boolean mScrollEnabled = true;                        // tab是否可以滚动
     private int mOrientation = HORIZONTAL;
@@ -97,6 +97,8 @@ public class RecyclerTabView extends RecyclerView {
             addItemDecoration(new LineIndicator(includeGap, indicatorColor, indicatorWidth, indicatorHeight, itemSpacing));
         } else if (indicatorStyle == INDICATOR_STYLE_FULL_LINE) {
             addItemDecoration(new FullLineIndicator(includeGap, includeSpacing, indicatorColor, indicatorWidth, indicatorHeight, itemSpacing));
+        } else if (indicatorStyle == INDICATOR_STYLE_TRIANGLE) {
+            addItemDecoration(new TriangleIndicator(indicatorColor, indicatorWidth, indicatorHeight, itemSpacing));
         }
         // 增加间距
         if (itemSpacing > 0 || tabPaddingStart > 0 || tabPaddingEnd > 0) {
