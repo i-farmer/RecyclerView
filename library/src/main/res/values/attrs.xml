@@ -1,7 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="itemSpacing" format="dimension" />
+    <attr name="tabPaddingStart" format="dimension" />
+    <attr name="tabPaddingEnd" format="dimension" />
+    <attr name="tabPadding" format="dimension" />
     <declare-styleable name="RecyclerTabView">
         <attr name="android:orientation" />
+        <attr name="indicatorStyle" format="enum">
+            <enum name="none" value="0" />  <!--可以自定义指示器-->
+            <enum name="line" value="1" />
+        </attr>
+        <attr name="indicatorColor" format="color" />
+        <attr name="indicatorWidth" format="dimension" />
+        <attr name="indicatorHeight" format="dimension" />
+        <attr name="indicatorPadding" format="dimension" /> <!--指示器同tabItem之间的间距-->
+        <attr name="itemSpacing" /> <!--item间距-->
+        <attr name="tabPaddingStart" /> <!--所有Item的外边距-->
+        <attr name="tabPaddingEnd" /> <!--所有Item的外边距-->
+        <attr name="tabPadding" /> <!--所有Item的外边距-->
     </declare-styleable>
 
     <style name="RecyclerTabView.Default" parent="">

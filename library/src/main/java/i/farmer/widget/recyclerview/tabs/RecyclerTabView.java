@@ -13,6 +13,7 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import i.farmer.widget.recyclerview.R;
+import i.farmer.widget.recyclerview.decoration.LinearSpacingDecoration;
 import i.farmer.widget.recyclerview.manager.CenterLinearLayoutManager;
 
 /**
@@ -21,6 +22,9 @@ import i.farmer.widget.recyclerview.manager.CenterLinearLayoutManager;
  * @description 基于RecyclerView实现的TabLayout，同时支持横向、竖向
  */
 public class RecyclerTabView extends RecyclerView {
+    private final int INDICATOR_STYLE_NONE = 0;                     // 用外部指示器
+    private final int INDICATOR_STYLE_LINE = 1;                     // 线条指示器
+
     protected boolean mScrollEnabled = true;                        // tab是否可以滚动
     private int mOrientation = HORIZONTAL;
     private LinearLayoutManager mLayoutManager;                     // layoutManager
@@ -37,7 +41,38 @@ public class RecyclerTabView extends RecyclerView {
         super(context, attrs, defStyleAttr);
         setOverScrollMode(View.OVER_SCROLL_NEVER); // 不要over效果，并且通过父类setWillNotDraw(false)设置 需要调用onDraw()进行绘制
         // 解析属性
-        resolveAttrs(context, attrs, defStyleAttr);
+        int indicatorStyle = INDICATOR_STYLE_LINE;  // 指示器类型
+        int indicatorColor = 0XFF1A1A1A;            // 指示器颜色
+        int indicatorWidth = 0;
+        int indicatorHeight = 0;
+        int indicatorPadding = 0;                   // 指示器同tabItem之间的间距
+        int itemSpacing = 0;                        // 每个item之间的间距
+        int tabPaddingStart = 0;                    // 整个tab的paddingStart
+        int tabPaddingEnd = 0;                      // 整个tab的paddingEnd
+        if (null != attrs) {
+            TypedArray typedArray = null;
+            try {
+                typedArray = context.obtainStyledAttributes(attrs, R.styleable.RecyclerTabView,
+                        defStyleAttr, R.style.RecyclerTabView_Default);
+                mOrientation = typedArray.getInt(R.styleable.RecyclerTabView_android_orientation, mOrientation);
+                indicatorStyle = typedArray.getInt(R.styleable.RecyclerTabView_indicatorStyle, indicatorStyle);
+                indicatorColor = typedArray.getColor(R.styleable.RecyclerTabView_indicatorColor, indicatorColor);
+                indicatorWidth = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_indicatorWidth, indicatorWidth);
+                indicatorHeight = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_indicatorHeight, indicatorHeight);
+                indicatorPadding = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_indicatorPadding, indicatorPadding);
+                itemSpacing = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_itemSpacing, itemSpacing);
+                int tabPadding = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_tabPadding, 0);
+                tabPaddingStart = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_tabPaddingStart, tabPadding);
+                tabPaddingEnd = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_tabPaddingEnd, tabPadding);
+            } catch (Exception ex) {
+
+            } finally {
+                if (null != typedArray) {
+                    typedArray.recycle();
+                    typedArray = null;
+                }
+            }
+        }
         // 设置布局管理器
         mLayoutManager = new CenterLinearLayoutManager(getContext()) {
             @Override
@@ -52,8 +87,25 @@ public class RecyclerTabView extends RecyclerView {
         };
         mLayoutManager.setOrientation(mOrientation);
         setLayoutManager(mLayoutManager);
+        // 增加指示器
+        if (indicatorStyle == INDICATOR_STYLE_LINE) {
+            addItemDecoration(new LineIndicator(indicatorColor, indicatorWidth, indicatorHeight, indicatorPadding));
+        }
+        // 增加间距
+        if (itemSpacing > 0 || tabPaddingStart > 0 || tabPaddingEnd > 0) {
+            addItemDecoration(new LinearSpacingDecoration(itemSpacing, tabPaddingStart, tabPaddingEnd));
+        }
         // 不需要动画
         setItemAnimator(null);
+    }
+
+    /**
+     * 设置是否可以滚动
+     *
+     * @param enabled
+     */
+    public void setScrollEnabled(boolean enabled) {
+        this.mScrollEnabled = enabled;
     }
 
     @Override
@@ -65,32 +117,6 @@ public class RecyclerTabView extends RecyclerView {
             throw new IllegalArgumentException("This Adapter is not supported.");
         }
         super.setAdapter(adapter);
-    }
-
-    /**
-     * 解析属性
-     *
-     * @param context
-     * @param attrs
-     * @param defStyleAttr
-     */
-    private void resolveAttrs(Context context, AttributeSet attrs, int defStyleAttr) {
-        if (null == attrs) {
-            return;
-        }
-        TypedArray typedArray = null;
-        try {
-            typedArray = context.obtainStyledAttributes(attrs, R.styleable.RecyclerTabView,
-                    defStyleAttr, R.style.RecyclerTabView_Default);
-            mOrientation = typedArray.getInt(R.styleable.RecyclerTabView_android_orientation, mOrientation);
-        } catch (Exception ex) {
-
-        } finally {
-            if (null != typedArray) {
-                typedArray.recycle();
-                typedArray = null;
-            }
-        }
     }
 
     /**

@@ -1,11 +1,11 @@
 package i.farmer.widget.recyclerview.tabs;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,20 +13,30 @@ import androidx.recyclerview.widget.RecyclerView;
 /**
  * @author i-farmer
  * @created-time 2020/12/8 11:47 AM
- * @description 圆角矩形指示器
+ * @description 线条指示器
  */
-public class RectangleIndicator extends RecyclerTabIndicator {
+class LineIndicator extends RecyclerTabIndicator {
     private int mIndicatorWidth = 42;
     private int mIndicatorHeight = 12;
+    private int mIndicatorPadding = 0;
     private int scrollPosition;
     private float scrollPositionOffset;
     private Paint mIndicatorPaint;
 
-    public RectangleIndicator() {
+    public LineIndicator(@ColorInt int color, int width, int height, int padding) {
         mIndicatorPaint = new Paint();
         mIndicatorPaint.setStyle(Paint.Style.FILL);
         mIndicatorPaint.setAntiAlias(true);
-        mIndicatorPaint.setColor(Color.parseColor("#000000"));
+        mIndicatorPaint.setColor(color);
+        if (width > 0) {
+            this.mIndicatorWidth = width;
+        }
+        if (height > 0) {
+            this.mIndicatorHeight = height;
+        }
+        if (padding > 0) {
+            this.mIndicatorPadding = padding;
+        }
     }
 
     @Override
@@ -61,7 +71,7 @@ public class RectangleIndicator extends RecyclerTabIndicator {
             }
             View firstView = mLayoutManager.findViewByPosition(firstVisible);
             positionEnd = getStart(firstView, horizontal);
-            positionStart = positionEnd - getSize(firstView, horizontal);     // 假设宽度相同
+            positionStart = positionEnd - getSize(firstView, horizontal);       // 假设宽度相同
             distance = getSize(firstView, horizontal);
         } else if (position > lastVisible) {
             // 不可见、往右
@@ -71,7 +81,7 @@ public class RectangleIndicator extends RecyclerTabIndicator {
             }
             View lastView = mLayoutManager.findViewByPosition(lastVisible);
             positionStart = getEnd(lastView, horizontal);
-            positionEnd = positionStart + getSize(lastView, horizontal);      // 假设宽度相同
+            positionEnd = positionStart + getSize(lastView, horizontal);        // 假设宽度相同
             distance = getSize(lastView, horizontal);
         } else {
             // 可见
@@ -80,14 +90,15 @@ public class RectangleIndicator extends RecyclerTabIndicator {
             positionEnd = getEnd(currentView, horizontal);
             if (position + 1 > lastVisible) {
                 // 下一个不可见
-                distance = getSize(currentView, horizontal);                // 假设宽度相同
+                distance = getSize(currentView, horizontal);                    // 假设宽度相同
             } else {
                 View nextView = mLayoutManager.findViewByPosition(position + 1);
                 distance = (getSize(currentView, horizontal) + getSize(nextView, horizontal)) / 2;        // 计算两个中间点的距离
             }
         }
+
         final float positionOffset = this.scrollPositionOffset;
-        final float size = horizontal ? mIndicatorWidth : mIndicatorHeight;     // 指示器大小
+        float size = horizontal ? mIndicatorWidth : mIndicatorHeight;     // 指示器大小
         float gap = (distance - size) * (positionOffset < 0.5 ? positionOffset : (1 - positionOffset));
 
         // 计算起始点
@@ -130,9 +141,9 @@ public class RectangleIndicator extends RecyclerTabIndicator {
         }
         LinearLayoutManager mLayoutManager = (LinearLayoutManager) parent.getLayoutManager();
         if (mLayoutManager.getOrientation() == RecyclerView.HORIZONTAL) {
-            outRect.set(0, 0, 0, mIndicatorHeight);
+            outRect.set(0, 0, 0, mIndicatorHeight + mIndicatorPadding);
         } else {
-            outRect.set(0, 0, mIndicatorWidth, 0);
+            outRect.set(0, 0, mIndicatorWidth + mIndicatorPadding, 0);
         }
     }
 }
