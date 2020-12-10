@@ -82,6 +82,9 @@ public class IndicatorDecoration extends RecyclerView.ItemDecoration {
     @Override
     public void onDrawOver(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         super.onDrawOver(c, parent, state);
+        if (!(parent.getLayoutManager() instanceof LinearLayoutManager)) {
+            throw new IllegalArgumentException("This LayoutManager is not supported.");
+        }
 
         LinearLayoutManager layoutManager = (LinearLayoutManager) parent.getLayoutManager();
         int activePosition = layoutManager.findFirstVisibleItemPosition();
