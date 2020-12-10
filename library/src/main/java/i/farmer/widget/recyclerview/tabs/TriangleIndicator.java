@@ -49,12 +49,12 @@ class TriangleIndicator extends RecyclerTabViewIndicator {
             // 箭头
             this.mIndicatorPath.reset();
             if (horizontal) {
-                this.mIndicatorPath.moveTo(center - size / 2, parent.getBottom());
-                this.mIndicatorPath.lineTo(center + size / 2, parent.getBottom());
+                this.mIndicatorPath.moveTo(center - size / 2.f, parent.getBottom());
+                this.mIndicatorPath.lineTo(center + size / 2.f, parent.getBottom());
                 this.mIndicatorPath.lineTo(center, parent.getBottom() - mIndicatorHeight);
             } else {
-                this.mIndicatorPath.moveTo(parent.getRight(), center - size / 2);
-                this.mIndicatorPath.lineTo(parent.getRight(), center + size / 2);
+                this.mIndicatorPath.moveTo(parent.getRight(), center - size / 2.f);
+                this.mIndicatorPath.lineTo(parent.getRight(), center + size / 2.f);
                 this.mIndicatorPath.lineTo(parent.getRight() - mIndicatorWidth, center);
             }
             this.mIndicatorPath.close();
@@ -62,10 +62,10 @@ class TriangleIndicator extends RecyclerTabViewIndicator {
         } else {
             // 滑动过程中
             if (horizontal) {
-                float r = mIndicatorHeight / 2;
+                float r = mIndicatorHeight / 2.f;
                 canvas.drawCircle(center, parent.getBottom() - r, r, this.mIndicatorPaint);
             } else {
-                float r = mIndicatorWidth / 2;
+                float r = mIndicatorWidth / 2.f;
                 canvas.drawCircle(parent.getRight() - r, center, r, this.mIndicatorPaint);
             }
         }
