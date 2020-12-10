@@ -16,17 +16,19 @@ import androidx.recyclerview.widget.RecyclerView;
  * @description 指示器
  */
 abstract class RecyclerTabViewIndicator extends RecyclerView.ItemDecoration {
+    private boolean includeGap;                 // 指示器滑动过程中是否包含gap差值计算
     private int scrollPosition;                 // 当前position
     private float scrollPositionOffset;         // 当前position偏移量
-    private int mItemSpacing = 0;
+    protected int mItemSpacing = 0;
 
     protected Paint mIndicatorPaint;
 
-    public RecyclerTabViewIndicator(@ColorInt int color, int spacing) {
+    public RecyclerTabViewIndicator(boolean includeGap, @ColorInt int color, int spacing) {
         mIndicatorPaint = new Paint();
         mIndicatorPaint.setStyle(Paint.Style.FILL);
         mIndicatorPaint.setAntiAlias(true);
         mIndicatorPaint.setColor(color);
+        this.includeGap = includeGap;
         if (spacing > 0) {
             this.mItemSpacing = spacing;
         }
@@ -110,7 +112,10 @@ abstract class RecyclerTabViewIndicator extends RecyclerView.ItemDecoration {
         // 下一个指示器大小
         final float nextSize = getIndicatorSize(horizontal, positionNextStart, positionNextEnd);
         // 指示器差值
-        final float gap = getIndicatorGap(size, nextSize, distance, positionOffset);
+        float gap = 0;
+        if (includeGap) {
+            gap = getIndicatorGap(size, nextSize, distance, positionOffset);
+        }
 
         // 计算指示器中间点
         float center = (positionEnd + positionStart) / 2 + distance * positionOffset;

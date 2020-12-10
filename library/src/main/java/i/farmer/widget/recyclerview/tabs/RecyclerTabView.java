@@ -50,6 +50,8 @@ public class RecyclerTabView extends RecyclerView {
         int itemSpacing = 0;                        // 每个item之间的间距
         int tabPaddingStart = 0;                    // 整个tab的paddingStart
         int tabPaddingEnd = 0;                      // 整个tab的paddingEnd
+        boolean includeGap = true;                  // 指示器滑动过程中是否包含gap差值计算
+        boolean includeSpacing = false;             // indicatorStyle=fullLine时，是否算上间隔
         if (null != attrs) {
             TypedArray typedArray = null;
             try {
@@ -65,6 +67,8 @@ public class RecyclerTabView extends RecyclerView {
                 int tabPadding = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_tabPadding, 0);
                 tabPaddingStart = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_tabPaddingStart, tabPadding);
                 tabPaddingEnd = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_tabPaddingEnd, tabPadding);
+                includeGap = typedArray.getInt(R.styleable.RecyclerTabView_indicatorGap, 0) == 1;
+                includeSpacing = typedArray.getBoolean(R.styleable.RecyclerTabView_indicatorIncludeSpacing, includeSpacing);
             } catch (Exception ex) {
 
             } finally {
@@ -90,9 +94,9 @@ public class RecyclerTabView extends RecyclerView {
         setLayoutManager(mLayoutManager);
         // 增加指示器
         if (indicatorStyle == INDICATOR_STYLE_LINE) {
-            addItemDecoration(new LineIndicator(indicatorColor, indicatorWidth, indicatorHeight, itemSpacing));
+            addItemDecoration(new LineIndicator(includeGap, indicatorColor, indicatorWidth, indicatorHeight, itemSpacing));
         } else if (indicatorStyle == INDICATOR_STYLE_FULL_LINE) {
-            addItemDecoration(new FullLineIndicator(indicatorColor, indicatorWidth, indicatorHeight, itemSpacing));
+            addItemDecoration(new FullLineIndicator(includeGap, includeSpacing, indicatorColor, indicatorWidth, indicatorHeight, itemSpacing));
         }
         // 增加间距
         if (itemSpacing > 0 || tabPaddingStart > 0 || tabPaddingEnd > 0) {

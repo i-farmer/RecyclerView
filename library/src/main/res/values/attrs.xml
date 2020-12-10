@@ -15,6 +15,11 @@
         <attr name="indicatorWidth" format="dimension" />
         <attr name="indicatorHeight" format="dimension" />
         <attr name="indicatorPadding" format="dimension" /> <!--指示器同tabItem之间的间距-->
+        <attr name="indicatorIncludeSpacing" format="boolean" /><!--indicatorStyle=fullLine时，是否算上间隔-->
+        <attr name="indicatorGap" format="enum">    <!--滑动过程中是否有gap差值计算-->
+            <enum name="never" value="0" />
+            <enum name="always" value="1" />
+        </attr>
         <attr name="itemSpacing" /> <!--item间距-->
         <attr name="tabPaddingStart" /> <!--所有Item的外边距-->
         <attr name="tabPaddingEnd" /> <!--所有Item的外边距-->

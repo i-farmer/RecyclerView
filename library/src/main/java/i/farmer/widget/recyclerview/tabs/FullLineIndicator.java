@@ -6,14 +6,17 @@ package i.farmer.widget.recyclerview.tabs;
  * @description 同tabItem等宽线条指示器
  */
 class FullLineIndicator extends LineIndicator {
+    private boolean includeSpacing;
 
-    public FullLineIndicator(int color, int width, int height, int spacing) {
-        super(color, width, height, spacing);
+    public FullLineIndicator(boolean includeGap, boolean includeSpacing,
+                             int color, int width, int height, int spacing) {
+        super(includeGap, color, width, height, spacing);
+        this.includeSpacing = includeSpacing;
     }
 
     @Override
     protected float getIndicatorSize(boolean horizontal, float start, float end) {
-        return end - start;
+        return end - start + (includeSpacing ? mItemSpacing : 0);
     }
 
     @Override
