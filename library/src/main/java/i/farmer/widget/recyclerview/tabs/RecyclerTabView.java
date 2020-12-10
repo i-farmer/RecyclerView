@@ -214,7 +214,12 @@ public class RecyclerTabView extends RecyclerView {
             if (IDLE) {
                 this.scrollToTabIndicator(position, 0);  // 绘制指示器
             }
-            this.smoothScrollToPosition(position);  // 滚动到目标
+            postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    smoothScrollToPosition(position);  // 滚动到目标
+                }
+            }, 200);
         }
     }
 
