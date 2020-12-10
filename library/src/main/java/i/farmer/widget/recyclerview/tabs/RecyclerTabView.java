@@ -24,6 +24,7 @@ import i.farmer.widget.recyclerview.manager.CenterLinearLayoutManager;
 public class RecyclerTabView extends RecyclerView {
     private final int INDICATOR_STYLE_NONE = 0;                     // 用外部指示器
     private final int INDICATOR_STYLE_LINE = 1;                     // 线条指示器
+    private final int INDICATOR_STYLE_FULL_LINE = 2;                // 同tabItem等宽线条指示器
 
     protected boolean mScrollEnabled = true;                        // tab是否可以滚动
     private int mOrientation = HORIZONTAL;
@@ -89,7 +90,9 @@ public class RecyclerTabView extends RecyclerView {
         setLayoutManager(mLayoutManager);
         // 增加指示器
         if (indicatorStyle == INDICATOR_STYLE_LINE) {
-            addItemDecoration(new LineIndicator(indicatorColor, indicatorWidth, indicatorHeight, indicatorPadding));
+            addItemDecoration(new LineIndicator(indicatorColor, indicatorWidth, indicatorHeight, indicatorPadding, itemSpacing));
+        } else if (indicatorStyle == INDICATOR_STYLE_FULL_LINE) {
+            addItemDecoration(new FullLineIndicator(indicatorColor, indicatorWidth, indicatorHeight, indicatorPadding, itemSpacing));
         }
         // 增加间距
         if (itemSpacing > 0 || tabPaddingStart > 0 || tabPaddingEnd > 0) {
@@ -113,7 +116,7 @@ public class RecyclerTabView extends RecyclerView {
         if (null == adapter) {
             throw new IllegalArgumentException("The Adapter can not be in null.");
         }
-        if (!(adapter instanceof TabViewAdapter)) {
+        if (!(adapter instanceof RecyclerTabViewAdapter)) {
             throw new IllegalArgumentException("This Adapter is not supported.");
         }
         super.setAdapter(adapter);
@@ -127,7 +130,7 @@ public class RecyclerTabView extends RecyclerView {
     public void setCurrentItem(int position) {
         scrollToTabIndicator(position, 0);
 
-        ((TabViewAdapter) getAdapter()).setCurrentIndicatorPosition(position);      // 选中
+        ((RecyclerTabViewAdapter) getAdapter()).setCurrentIndicatorPosition(position);      // 选中
         getAdapter().notifyDataSetChanged();
     }
 
@@ -141,8 +144,8 @@ public class RecyclerTabView extends RecyclerView {
         final int count = getItemDecorationCount();
         for (int i = 0; i < count; i++) {
             ItemDecoration decoration = getItemDecorationAt(i);
-            if (decoration instanceof RecyclerTabIndicator) {
-                ((RecyclerTabIndicator) decoration).scrollToTabIndicator(position, positionOffset);
+            if (decoration instanceof RecyclerTabViewIndicator) {
+                ((RecyclerTabViewIndicator) decoration).scrollToTabIndicator(position, positionOffset);
             }
         }
         invalidateItemDecorations();
@@ -221,7 +224,7 @@ public class RecyclerTabView extends RecyclerView {
      * @param position
      */
     private void onPageSelected(boolean IDLE, int position) {
-        TabViewAdapter adapter = (TabViewAdapter) RecyclerTabView.this.getAdapter();
+        RecyclerTabViewAdapter adapter = (RecyclerTabViewAdapter) RecyclerTabView.this.getAdapter();
         if (adapter.getIndicatorPosition() != position) {
             adapter.setCurrentIndicatorPosition(position);
             this.smoothScrollToPosition(position);  // 滚动到目标

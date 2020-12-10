@@ -12,14 +12,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import i.farmer.demo.recyclerview.R;
-import i.farmer.widget.recyclerview.tabs.TabViewAdapter;
+import i.farmer.widget.recyclerview.tabs.RecyclerTabViewAdapter;
 
 /**
  * @author i-farmer
  * @created-time 2020/12/4 11:30 AM
  * @description
  */
-public class TabItemAdapter extends TabViewAdapter<TabItemAdapter.TabItemHolder> {
+public class TabItemAdapter extends RecyclerTabViewAdapter<TabItemAdapter.TabItemHolder> {
     private LayoutInflater mLayoutInflater;
     private int indicatorPosition = 0;
     private List<String> mData;

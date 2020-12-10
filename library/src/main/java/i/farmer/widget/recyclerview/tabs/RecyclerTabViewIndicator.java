@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
  * @created-time 2020/12/8 4:49 PM
  * @description 指示器
  */
-abstract class RecyclerTabIndicator extends RecyclerView.ItemDecoration {
+abstract class RecyclerTabViewIndicator extends RecyclerView.ItemDecoration {
     public abstract void scrollToTabIndicator(int position, float positionOffset);
 
     private void checkView(View view) {

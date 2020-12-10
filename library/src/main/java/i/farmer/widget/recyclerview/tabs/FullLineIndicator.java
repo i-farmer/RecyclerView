@@ -13,9 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 /**
  * @author i-farmer
  * @created-time 2020/12/8 11:47 AM
- * @description 线条指示器
+ * @description 同tabItem等宽线条指示器
  */
-class LineIndicator extends RecyclerTabViewIndicator {
+class FullLineIndicator extends RecyclerTabViewIndicator {
     private int mIndicatorWidth = 42;
     private int mIndicatorHeight = 12;
     private int mIndicatorPadding = 0;
@@ -24,7 +24,7 @@ class LineIndicator extends RecyclerTabViewIndicator {
     private float scrollPositionOffset;
     private Paint mIndicatorPaint;
 
-    public LineIndicator(@ColorInt int color, int width, int height, int padding, int spacing) {
+    public FullLineIndicator(@ColorInt int color, int width, int height, int padding, int spacing) {
         mIndicatorPaint = new Paint();
         mIndicatorPaint.setStyle(Paint.Style.FILL);
         mIndicatorPaint.setAntiAlias(true);
@@ -66,7 +66,7 @@ class LineIndicator extends RecyclerTabViewIndicator {
         int firstVisible = mLayoutManager.findFirstVisibleItemPosition();
         int lastVisible = mLayoutManager.findLastVisibleItemPosition();
 
-        float positionStart, positionEnd, distance;   // distance，是position与position+1之间的中间点距离
+        float positionStart, positionEnd, distance, gap, maxRight;   // distance，是position与position+1之间的中间点距离
         if (position < firstVisible) {
             // 不可见、往左
             if (position + 1 < firstVisible) {
@@ -77,6 +77,8 @@ class LineIndicator extends RecyclerTabViewIndicator {
             positionEnd = getStart(firstView, horizontal);
             positionStart = positionEnd - getSize(firstView, horizontal);       // 假设宽度相同
             distance = getSize(firstView, horizontal);
+            gap = 0;
+            maxRight = getEnd(firstView, horizontal);
         } else if (position > lastVisible) {
             // 不可见、往右
             if (position - 1 > lastVisible) {
@@ -87,6 +89,8 @@ class LineIndicator extends RecyclerTabViewIndicator {
             positionStart = getEnd(lastView, horizontal);
             positionEnd = positionStart + getSize(lastView, horizontal);        // 假设宽度相同
             distance = getSize(lastView, horizontal);
+            gap = 0;
+            maxRight = positionEnd + distance;
         } else {
             // 可见
             View currentView = mLayoutManager.findViewByPosition(position);
@@ -95,23 +99,24 @@ class LineIndicator extends RecyclerTabViewIndicator {
             if (position + 1 > lastVisible) {
                 // 下一个不可见
                 distance = getSize(currentView, horizontal);                    // 假设宽度相同
+                gap = 0;
+                maxRight = positionEnd + distance;
             } else {
                 View nextView = mLayoutManager.findViewByPosition(position + 1);
                 distance = (getSize(currentView, horizontal) + getSize(nextView, horizontal)) / 2;        // 计算两个中间点的距离
+                gap = getSize(nextView, horizontal) - getSize(currentView, horizontal);
+                maxRight = getEnd(nextView, horizontal);
             }
         }
-        distance += mItemSpacing;   // 加上间隔
-
         final float positionOffset = this.scrollPositionOffset;
-        float size = horizontal ? mIndicatorWidth : mIndicatorHeight;     // 指示器大小
-        float gap = (distance - size) * (positionOffset < 0.5 ? positionOffset : (1 - positionOffset));
+        distance += this.mItemSpacing;      // 加上间隔
+        gap *= positionOffset;
 
+        float size = positionEnd - positionStart;     // 当前指示器大小
         // 计算起始点
-        float start = (positionStart + positionEnd) / 2 + distance * positionOffset - size / 2 - gap / 2;
-        if (start < (positionStart + positionEnd) / 2 - size / 2) {
-            start = (positionStart + positionEnd) / 2 - size / 2;
-        } else if (start + size + gap > (positionStart + positionEnd) / 2 + distance + size / 2) {
-            start = (positionStart + positionEnd) / 2 + distance + size / 2;
+        float start = positionStart + distance * positionOffset;
+        if (start + size + gap > maxRight) {
+            start = maxRight - size - gap;
         }
 
         drawIndicator(parent, horizontal, c, start, size + gap);

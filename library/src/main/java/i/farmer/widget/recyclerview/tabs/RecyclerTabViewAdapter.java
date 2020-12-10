@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
  * @created-time 2020/12/8 2:16 PM
  * @description RecyclerTabView 适配器的基类
  */
-public abstract class TabViewAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
+public abstract class RecyclerTabViewAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
 
     /**
      * 设置当前选中指示器下标
