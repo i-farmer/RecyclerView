@@ -130,7 +130,7 @@ abstract class RecyclerTabViewIndicator extends RecyclerView.ItemDecoration {
             }
         }
         // distance，是position与position+1之间的中间点距离，另外加上item间隔
-        final float distance = (positionNextEnd - positionStart - mItemSpacing) / 2.f + mItemSpacing;
+        final float distance = (positionNextStart + positionNextEnd - positionStart - positionEnd) / 2.f;
         // 当前指示器大小
         final float size = getIndicatorSize(horizontal, positionStart, positionEnd);
         // 下一个指示器大小
