@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#00f"
+    android:orientation="vertical">
+
+    <i.farmer.widget.recyclerview.tabs.RecyclerTabView
+        android:id="@+id/mTabView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:orientation="horizontal"
+        app:indicatorColor="#f00"
+        app:indicatorHeight="@dimen/x8"
+        app:indicatorWidth="@dimen/x40"
+        app:itemSpacing="@dimen/x40"
+        app:tabPadding="@dimen/x32" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/mViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#0f0"
+        android:orientation="horizontal" />
+</LinearLayout>
