@@ -211,10 +211,10 @@ public class RecyclerTabView extends RecyclerView {
         RecyclerTabViewAdapter adapter = (RecyclerTabViewAdapter) RecyclerTabView.this.getAdapter();
         if (adapter.getIndicatorPosition() != position) {
             adapter.setCurrentIndicatorPosition(position);
-            this.smoothScrollToPosition(position);  // 滚动到目标
             if (IDLE) {
                 this.scrollToTabIndicator(position, 0);  // 绘制指示器
             }
+            this.smoothScrollToPosition(position);  // 滚动到目标
         }
     }
 
