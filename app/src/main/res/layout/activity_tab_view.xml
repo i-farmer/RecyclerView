@@ -17,7 +17,7 @@
         app:indicatorHeight="@dimen/x12"
         app:indicatorIncludeSpacing="true"
         app:indicatorSmoothCircle="true"
-        app:indicatorStyle="triangle"
+        app:indicatorStyle="line"
         app:indicatorWidth="@dimen/x28"
         app:itemSpacing="@dimen/x40"
         app:tabPadding="@dimen/x32" />
@@ -26,6 +26,5 @@
         android:id="@+id/mViewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#0f0"
         android:orientation="horizontal" />
 </LinearLayout>

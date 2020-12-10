@@ -2,8 +2,12 @@ package i.farmer.widget.recyclerview.tabs;
 
 import android.graphics.Canvas;
 import android.graphics.Path;
+import android.graphics.Rect;
+import android.view.View;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
@@ -18,7 +22,7 @@ class TriangleIndicator extends RecyclerTabViewIndicator {
     private Path mIndicatorPath;
 
     public TriangleIndicator(boolean smoothCircle, @ColorInt int color, int width, int height, int spacing) {
-        super(false, color, spacing);
+        super(true, false, color, spacing);
         if (width > 0) {
             this.mIndicatorWidth = width;
         }
@@ -64,6 +68,17 @@ class TriangleIndicator extends RecyclerTabViewIndicator {
                 float r = mIndicatorWidth / 2;
                 canvas.drawCircle(parent.getRight() - r, center, r, this.mIndicatorPaint);
             }
+        }
+    }
+
+    @Override
+    public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+        super.getItemOffsets(outRect, view, parent, state);
+        LinearLayoutManager mLayoutManager = (LinearLayoutManager) parent.getLayoutManager();
+        if (mLayoutManager.getOrientation() == RecyclerView.HORIZONTAL) {
+            outRect.set(0, 0, 0, mIndicatorHeight);
+        } else {
+            outRect.set(0, 0, mIndicatorWidth, 0);
         }
     }
 }

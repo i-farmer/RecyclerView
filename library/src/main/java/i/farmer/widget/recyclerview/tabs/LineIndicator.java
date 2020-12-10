@@ -19,7 +19,7 @@ class LineIndicator extends RecyclerTabViewIndicator {
     private int mIndicatorHeight = 12;
 
     public LineIndicator(boolean includeGap, @ColorInt int color, int width, int height, int spacing) {
-        super(includeGap, color, spacing);
+        super(true, includeGap, color, spacing);
         if (width > 0) {
             this.mIndicatorWidth = width;
         }

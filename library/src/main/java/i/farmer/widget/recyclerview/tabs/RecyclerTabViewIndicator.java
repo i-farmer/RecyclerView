@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
  * @description 指示器
  */
 abstract class RecyclerTabViewIndicator extends RecyclerView.ItemDecoration {
+    private boolean drawOver;
     private boolean includeGap;                 // 指示器滑动过程中是否包含gap差值计算
     private int scrollPosition;                 // 当前position
     private float scrollPositionOffset;         // 当前position偏移量
@@ -23,7 +24,8 @@ abstract class RecyclerTabViewIndicator extends RecyclerView.ItemDecoration {
 
     protected Paint mIndicatorPaint;
 
-    public RecyclerTabViewIndicator(boolean includeGap, @ColorInt int color, int spacing) {
+    public RecyclerTabViewIndicator(boolean drawOver, boolean includeGap, @ColorInt int color, int spacing) {
+        this.drawOver = drawOver;
         mIndicatorPaint = new Paint();
         mIndicatorPaint.setStyle(Paint.Style.FILL);
         mIndicatorPaint.setAntiAlias(true);
@@ -39,6 +41,14 @@ abstract class RecyclerTabViewIndicator extends RecyclerView.ItemDecoration {
         this.scrollPositionOffset = positionOffset;
     }
 
+    /**
+     * 设置指示器颜色
+     *
+     * @param color
+     */
+    public void setIndicatorColor(@ColorInt int color) {
+        this.mIndicatorPaint.setColor(color);
+    }
 
     @Override
     public void getItemOffsets(@NonNull Rect outRect, @NonNull View view,
@@ -50,8 +60,22 @@ abstract class RecyclerTabViewIndicator extends RecyclerView.ItemDecoration {
     }
 
     @Override
+    public void onDraw(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+        if (!drawOver) {
+            onDrawIndicator(c, parent, state);
+        }
+    }
+
+    @Override
     public void onDrawOver(@NonNull Canvas c, @NonNull RecyclerView parent,
                            @NonNull RecyclerView.State state) {
+        if (drawOver) {
+            onDrawIndicator(c, parent, state);
+        }
+    }
+
+    private void onDrawIndicator(@NonNull Canvas c, @NonNull RecyclerView parent,
+                                 @NonNull RecyclerView.State state) {
         if (!(parent.getLayoutManager() instanceof LinearLayoutManager)) {
             throw new IllegalArgumentException("This LayoutManager is not supported.");
         }

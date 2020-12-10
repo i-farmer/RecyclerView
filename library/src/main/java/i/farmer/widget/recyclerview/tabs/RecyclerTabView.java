@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,6 +26,7 @@ public class RecyclerTabView extends RecyclerView {
     private final int INDICATOR_STYLE_LINE = 1;                     // 线条指示器
     private final int INDICATOR_STYLE_FULL_LINE = 2;                // 同tabItem等宽线条指示器
     private final int INDICATOR_STYLE_TRIANGLE = 3;                 // 三角指示器
+    private final int INDICATOR_STYLE_BLOCK = 4;                    // 块状背景指示器
 
     protected boolean mScrollEnabled = true;                        // tab是否可以滚动
     private int mOrientation = HORIZONTAL;
@@ -101,6 +103,8 @@ public class RecyclerTabView extends RecyclerView {
             addItemDecoration(new FullLineIndicator(includeGap, includeSpacing, indicatorColor, indicatorWidth, indicatorHeight, itemSpacing));
         } else if (indicatorStyle == INDICATOR_STYLE_TRIANGLE) {
             addItemDecoration(new TriangleIndicator(indicatorSmoothCircle, indicatorColor, indicatorWidth, indicatorHeight, itemSpacing));
+        } else if (indicatorStyle == INDICATOR_STYLE_BLOCK) {
+            addItemDecoration(new BlockIndicator(includeGap, indicatorColor, itemSpacing));
         }
         // 增加间距
         if (itemSpacing > 0 || tabPaddingStart > 0 || tabPaddingEnd > 0) {
@@ -115,44 +119,12 @@ public class RecyclerTabView extends RecyclerView {
     }
 
     /**
-     * 设置是否可以滚动
-     *
-     * @param enabled
-     */
-    public void setScrollEnabled(boolean enabled) {
-        this.mScrollEnabled = enabled;
-    }
-
-    @Override
-    public void setAdapter(@Nullable Adapter adapter) {
-        if (null == adapter) {
-            throw new IllegalArgumentException("The Adapter can not be in null.");
-        }
-        if (!(adapter instanceof RecyclerTabViewAdapter)) {
-            throw new IllegalArgumentException("This Adapter is not supported.");
-        }
-        super.setAdapter(adapter);
-    }
-
-    /**
-     * 直接选中
-     *
-     * @param position
-     */
-    public void setCurrentItem(int position) {
-        scrollToTabIndicator(position, 0);
-
-        ((RecyclerTabViewAdapter) getAdapter()).setCurrentIndicatorPosition(position);      // 选中
-        getAdapter().notifyDataSetChanged();
-    }
-
-    /**
      * 滚动指示器 增加偏移量
      *
      * @param position
      * @param positionOffset
      */
-    public void scrollToTabIndicator(int position, float positionOffset) {
+    private void scrollToTabIndicator(int position, float positionOffset) {
         final int count = getItemDecorationCount();
         for (int i = 0; i < count; i++) {
             ItemDecoration decoration = getItemDecorationAt(i);
@@ -242,6 +214,53 @@ public class RecyclerTabView extends RecyclerView {
             this.smoothScrollToPosition(position);  // 滚动到目标
             if (IDLE) {
                 this.scrollToTabIndicator(position, 0);  // 绘制指示器
+            }
+        }
+    }
+
+    /**
+     * 设置是否可以滚动
+     *
+     * @param enabled
+     */
+    public void setScrollEnabled(boolean enabled) {
+        this.mScrollEnabled = enabled;
+    }
+
+    @Override
+    public void setAdapter(@Nullable Adapter adapter) {
+        if (null == adapter) {
+            throw new IllegalArgumentException("The Adapter can not be in null.");
+        }
+        if (!(adapter instanceof RecyclerTabViewAdapter)) {
+            throw new IllegalArgumentException("This Adapter is not supported.");
+        }
+        super.setAdapter(adapter);
+    }
+
+    /**
+     * 直接选中
+     *
+     * @param position
+     */
+    public void setCurrentItem(int position) {
+        scrollToTabIndicator(position, 0);
+
+        ((RecyclerTabViewAdapter) getAdapter()).setCurrentIndicatorPosition(position);      // 选中
+        getAdapter().notifyDataSetChanged();
+    }
+
+    /**
+     * 设置指示器颜色
+     *
+     * @param color
+     */
+    public void setIndicatorColor(@ColorInt int color) {
+        final int count = getItemDecorationCount();
+        for (int i = 0; i < count; i++) {
+            ItemDecoration decoration = getItemDecorationAt(i);
+            if (decoration instanceof RecyclerTabViewIndicator) {
+                ((RecyclerTabViewIndicator) decoration).setIndicatorColor(color);
             }
         }
     }

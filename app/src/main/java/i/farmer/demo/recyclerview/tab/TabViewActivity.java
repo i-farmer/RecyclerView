@@ -1,5 +1,6 @@
 package i.farmer.demo.recyclerview.tab;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -42,17 +43,34 @@ public class TabViewActivity extends AppCompatActivity {
             "搞笑",
             "图片"
     );
+    private RecyclerTabView mTabView;
+    private ViewPager2 mViewPager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tab_view);
-        RecyclerTabView mTabView = findViewById(R.id.mTabView);
+        mTabView = findViewById(R.id.mTabView);
         mTabView.setAdapter(new TabItemAdapter(mData));
 
-        ViewPager2 mViewPager = findViewById(R.id.mViewPager);
+        mViewPager = findViewById(R.id.mViewPager);
         mViewPager.setAdapter(new PageAdapter(mData));
 
         mTabView.setUpWithViewPager2(mViewPager);
+
+        mViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                if (position == 4) {
+                    mViewPager.setBackgroundColor(Color.parseColor("#00ff00"));
+                    mTabView.setBackgroundColor(Color.parseColor("#00ff00"));
+                    mTabView.setIndicatorColor(Color.parseColor("#FFFFFF"));
+                } else {
+                    mViewPager.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                    mTabView.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                    mTabView.setIndicatorColor(Color.parseColor("#1A1A1A"));
+                }
+            }
+        });
     }
 }
