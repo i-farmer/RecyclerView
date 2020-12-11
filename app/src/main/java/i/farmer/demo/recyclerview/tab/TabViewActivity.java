@@ -2,6 +2,7 @@ package i.farmer.demo.recyclerview.tab;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -52,15 +53,9 @@ public class TabViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_tab_view);
         mTabView = findViewById(R.id.mTabView);
         mTabView.setAdapter(new TabItemAdapter(mData));
-
-        mViewPager = findViewById(R.id.mViewPager);
-        mViewPager.setAdapter(new PageAdapter(mData));
-
-        mTabView.setUpWithViewPager2(mViewPager);
-
-        mViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+        mTabView.setCallback(new RecyclerTabView.OnRecyclerTabViewCallback() {
             @Override
-            public void onPageSelected(int position) {
+            public void onTabItemChanged(int position) {
                 if (position == 4) {
                     mViewPager.setBackgroundColor(Color.parseColor("#00ff00"));
                     mTabView.setBackgroundColor(Color.parseColor("#00ff00"));
@@ -71,6 +66,16 @@ public class TabViewActivity extends AppCompatActivity {
                     mTabView.setIndicatorColor(Color.parseColor("#991A1A1A"));
                 }
             }
+
+            @Override
+            public void onTabItemReClick(int position) {
+                Toast.makeText(TabViewActivity.this, "重新点击了" + (position + 1), Toast.LENGTH_SHORT).show();
+            }
         });
+
+        mViewPager = findViewById(R.id.mViewPager);
+        mViewPager.setAdapter(new PageAdapter(mData));
+
+        mTabView.setUpWithViewPager2(mViewPager);
     }
 }

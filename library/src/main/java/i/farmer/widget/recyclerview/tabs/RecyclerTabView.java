@@ -23,6 +23,12 @@ import i.farmer.widget.recyclerview.manager.CenterLinearLayoutManager;
  * @description 基于RecyclerView实现的TabLayout，同时支持横向、竖向
  */
 public class RecyclerTabView extends RecyclerView implements RecyclerTabViewAdapter.OnRecyclerTabViewClickListener {
+    public interface OnRecyclerTabViewCallback {
+        void onTabItemChanged(int position);
+
+        void onTabItemReClick(int position);
+    }
+
     private final int INDICATOR_STYLE_LINE = 1;                     // 线条指示器
     private final int INDICATOR_STYLE_FULL_LINE = 2;                // 同tabItem等宽线条指示器
     private final int INDICATOR_STYLE_TRIANGLE = 3;                 // 三角指示器
@@ -34,6 +40,8 @@ public class RecyclerTabView extends RecyclerView implements RecyclerTabViewAdap
 
     private ViewPager mViewPager = null;                            // 关联的ViewPager，只允许关联一个
     private ViewPager2 mViewPager2 = null;
+
+    private OnRecyclerTabViewCallback callback;                     // 回掉
 
     public RecyclerTabView(@NonNull Context context) {
         this(context, null);
@@ -235,18 +243,22 @@ public class RecyclerTabView extends RecyclerView implements RecyclerTabViewAdap
         @Override
         public void onPageSelected(int position) {
             RecyclerTabViewAdapter adapter = (RecyclerTabViewAdapter) RecyclerTabView.this.getAdapter();
-            if (adapter.getIndicatorPosition() != position) {
-                adapter.setIndicatorPosition(position);                         // 刷新指示器
-                if (mScrollState == ViewPager2.SCROLL_STATE_IDLE) {
-                    RecyclerTabView.this.scrollToTabIndicator(position, 0);     // 绘制指示器
-                }
-                postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        smoothScrollToPosition(position);                       // 滚动到目标
-                    }
-                }, 200);
+            if (adapter.getIndicatorPosition() == position) {
+                return;
             }
+            if (null != callback) {
+                callback.onTabItemChanged(position);                        // 回掉
+            }
+            adapter.setIndicatorPosition(position);                         // 刷新指示器
+            if (mScrollState == ViewPager2.SCROLL_STATE_IDLE) {
+                RecyclerTabView.this.scrollToTabIndicator(position, 0);     // 绘制指示器
+            }
+            postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    smoothScrollToPosition(position);                       // 滚动到目标
+                }
+            }, 200);
         }
     }
 
@@ -266,6 +278,11 @@ public class RecyclerTabView extends RecyclerView implements RecyclerTabViewAdap
      */
     @Override
     public void setCurrentItem(int position) {
+        if (null != callback
+                && ((RecyclerTabViewAdapter) getAdapter()).getIndicatorPosition() == position) {
+            // 重复点击
+            callback.onTabItemReClick(position);
+        }
         if (null != mViewPager) {
             mViewPager.setCurrentItem(position);
         } else if (null != mViewPager2) {
@@ -286,5 +303,14 @@ public class RecyclerTabView extends RecyclerView implements RecyclerTabViewAdap
                 ((RecyclerTabViewIndicator) decoration).setIndicatorColor(color);
             }
         }
+    }
+
+    /**
+     * 设置回掉
+     *
+     * @param callback
+     */
+    public void setCallback(OnRecyclerTabViewCallback callback) {
+        this.callback = callback;
     }
 }
