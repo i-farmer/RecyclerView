@@ -18,7 +18,7 @@ import java.util.List;
  */
 public abstract class RecyclerTabViewAdapter<T> extends RecyclerView.Adapter<RecyclerTabViewAdapter.RecyclerTabViewHolder> {
     public interface OnRecyclerTabViewClickListener {
-        void setCurrentItem(int position);
+        void setCurrentItem(int position, boolean smoothScroll);
     }
 
     protected class RecyclerTabViewHolder extends RecyclerView.ViewHolder {

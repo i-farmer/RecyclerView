@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="itemSpacing" format="dimension" />
+    <attr name="tabItemSpacing" format="dimension" />
     <attr name="tabPaddingStart" format="dimension" />
     <attr name="tabPaddingEnd" format="dimension" />
     <attr name="tabPadding" format="dimension" />
@@ -16,13 +16,13 @@
         <attr name="indicatorColor" format="color" />
         <attr name="indicatorWidth" format="dimension" />
         <attr name="indicatorHeight" format="dimension" />
-        <attr name="indicatorIncludeSpacing" format="boolean" /><!--indicatorStyle=fullLine时，是否算上间隔-->
         <attr name="indicatorGap" format="enum">    <!--滑动过程中是否有gap差值计算-->
             <enum name="never" value="0" />
             <enum name="always" value="1" />
         </attr>
+        <attr name="indicatorPadding" format="dimension" /> <!--block、fullLine指示器，左右两边间距，不能大于itemSpacing，不指定的话等于0-->
         <attr name="indicatorSmoothCircle" format="boolean" />  <!--在滑动过程中，是否绘制小圆点指示器，目前只有在三角形指示器中可用-->
-        <attr name="itemSpacing" /> <!--item间距-->
+        <attr name="tabItemSpacing" /> <!--item间距-->
         <attr name="tabPaddingStart" /> <!--所有Item的外边距-->
         <attr name="tabPaddingEnd" /> <!--所有Item的外边距-->
         <attr name="tabPadding" /> <!--所有Item的外边距-->

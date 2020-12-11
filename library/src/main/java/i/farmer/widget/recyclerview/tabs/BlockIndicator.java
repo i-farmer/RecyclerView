@@ -11,14 +11,16 @@ import androidx.recyclerview.widget.RecyclerView;
  * @description 块状背景指示器
  */
 public class BlockIndicator extends RecyclerTabViewIndicator {
+    private int indicatorPadding;
 
-    public BlockIndicator(boolean includeGap, @ColorInt int color, int spacing) {
+    public BlockIndicator(boolean includeGap, @ColorInt int color, int indicatorPadding, int spacing) {
         super(false, includeGap, color, spacing);
+        this.indicatorPadding = indicatorPadding;
     }
 
     @Override
     protected float getIndicatorSize(boolean horizontal, float start, float end) {
-        return end - start + mItemSpacing;
+        return end - start + indicatorPadding * 2;
     }
 
     @Override

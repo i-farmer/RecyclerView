@@ -45,16 +45,16 @@ class LineIndicator extends RecyclerTabViewIndicator {
                     parent.getBottom() - mIndicatorHeight,
                     center + size / 2.f,
                     parent.getBottom(),
-                    mIndicatorWidth / 2.f,
-                    mIndicatorWidth / 2.f,
+                    mIndicatorWidth,
+                    mIndicatorWidth,
                     mIndicatorPaint);
         } else {
             canvas.drawRoundRect(parent.getRight() - mIndicatorWidth,
                     center - size / 2.f,
                     parent.getRight(),
                     center + size / 2.f,
-                    mIndicatorHeight / 2.f,
-                    mIndicatorHeight / 2.f,
+                    mIndicatorHeight,
+                    mIndicatorHeight,
                     mIndicatorPaint);
         }
     }

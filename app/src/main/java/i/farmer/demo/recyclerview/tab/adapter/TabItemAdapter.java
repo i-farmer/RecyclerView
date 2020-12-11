@@ -33,7 +33,7 @@ public class TabItemAdapter extends RecyclerTabViewAdapter<String> {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                clickListener.setCurrentItem(position);
+                clickListener.setCurrentItem(position, false);
             }
         });
     }

@@ -1,70 +1,122 @@
 # RecyclerView
 
-## 指示器
+## RecyclerTabView指示器
+#### 1.代码使用，同时支持ViewPager、ViewPager2，支持横竖向
 ```
-支持三角形、圆形、圆角矩形，默认三角形
-
-1.创建构造器
-  new IndicatorDecoration.Builder()
-    或者
-  new IndicatorDecoration.Builder(context)  使用资源参数的时候，请传入Context上下文
-2.指示器样式
-  Builder.setShape(@ShapeMode int shape) 静止样式、滚动样式使用同一个
-    或者
-  Builder.setShape(@ShapeMode int staticShape, @ShapeMode int scrollShape) 静止样式、滚动样式分别设置
-3.指示器颜色
-  Builder.setColor(int color)
-    或者
-  Builder.setColorRes(@ColorRes int color)
-4.指示器大小
-  Builder.setSize(int width)  高度为宽度的一半
-    或者
-  Builder.setSize(int width, int height)
-    或者
-  Builder.setSizeRes(@DimenRes int width)
-    或者
-  Builder.setSizeRes(@DimenRes int width, @DimenRes int height)
-5.指示器同itemView之间的间距
-  Builder.setIndicatorPadding(int padding)
-    或者
-  Builder.setIndicatorPaddingRes(@DimenRes int padding) 
-6.itemView之间的间距，默认为0
-  Builder.setItemSpacing(int itemSpacing)
-    或者
-  Builder.setItemSpacingRes(@DimenRes int itemSpacing)
-7.整个列表的前后padding
-  Builder.setPadding(int padding)   前后间距相同
-    或者
-  Builder.setPaddingRes(@DimenRes int padding)
-    或者
-  Builder.setPaddingStart(int start)
-    或者
-  Builder.setPaddingStartRes(@DimenRes int start)
-    或者
-  Builder.setPaddingEnd(int end)
-    或者
-  Builder.setPaddingEndRes(@DimenRes int end) 
-8.完整示例
-new IndicatorDecoration.Builder(this)
-  .setShape(IndicatorDecoration.SHAPE_OVAL)
-  .setColorRes(R.color.colorPrimary)          // 使用Res资源，必须使用构造器传入Context
-  .setSizeRes(R.dimen.x22, R.dimen.x10)
-  .setIndicatorPaddingRes(R.dimen.x10)
-  .setItemSpacingRes(R.dimen.x16)
-  .setPadingRes(R.dimen.x30)
-  .attach(RecycerView view, ViewPager pager);//  .attach(RecycerView view, ViewPager2 pager);
-
-new IndicatorDecoration.Builder()
-  .setShape(IndicatorDecoration.SHAPE_OVAL)
-  .setColor(Color.parseColor("#1A1A1A"))
-  .setSize(22, 10)
-  .setIndicatorPadding(10)
-  .setItemSpacing(16)
-  .setPading(30)
-  .attach(RecycerView view, ViewPager pager);  //  .attach(RecycerView view, ViewPager2 pager);
-  以上两种方式可以交叉使用，其中指示器高度，可以不传入，默认为宽度的一半
-
+  RecyclerTabView.setAdapter(A extends RecyclerTabViewAdapter）
+  RecyclerTabView.setUpWithViewPager
+  RecyclerTabView.setUpWithViewPager2
+  注：绑定之前，必须设置RecyclerTabView和ViewPager的适配器，且数量要相等
+  
+  RecyclerTabView.setCallback（可选）
 ```
+#### 2.自定义指示器
 ```
-注意：目前不支持 smooth，即ViewPager.setCurrentItem(position)，请使用 ViewPager.setCurrentItem(position, false)
+  <i.farmer.widget.recyclerview.tabs.RecyclerTabView
+    android:id="@+id/mTabView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    app:indicatorStyle="none"
+    app:tabItemSpacing="@dimen/x40"
+    app:tabPaddingEnd="@dimen/x60"
+    app:tabPaddingStart="@dimen/x40" />
+    
+  然后在代码中增加自定义指示器
+  RecyclerTabView.addItemDecoration(D extends RecyclerTabViewIndicator)  
+```
+#### 3.线条指示器（默认）
+```
+  <i.farmer.widget.recyclerview.tabs.RecyclerTabView
+    android:id="@+id/mTabView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingTop="@dimen/x20"
+    android:paddingBottom="@dimen/x10"
+    app:indicatorColor="#1A1A1A"
+    app:indicatorGap="always"
+    app:indicatorHeight="@dimen/x10"
+    app:indicatorStyle="line"
+    app:indicatorWidth="@dimen/x28"
+    app:tabItemSpacing="@dimen/x40"
+    app:tabPaddingEnd="@dimen/x60"
+    app:tabPaddingStart="@dimen/x60" />
+    其中：如果是横向使用android:paddingTop、android:paddingBottom，否则使用
+    android:paddingLeft、android:paddingRight，来实现item与整个TabView的起始键距、与指示器之间的间距
+```
+#### 4.同文字等宽的线条指示器
+```
+  <i.farmer.widget.recyclerview.tabs.RecyclerTabView
+    android:id="@+id/mTabView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/x20"
+    android:paddingBottom="@dimen/x10"
+    app:indicatorColor="#1A1A1A"
+    app:indicatorHeight="@dimen/x10"
+    app:indicatorPadding="@dimen/x30"
+    app:indicatorStyle="fullLine"
+    app:tabItemSpacing="@dimen/x40"
+    app:tabPadding="@dimen/x60" />
+```
+#### 5.三角形指示器，可选在滑动过程中是否使用圆形指示器（考虑到三角形底部必须跟ViewPager挨着，但是ViewPager两页中间可能会有间隙，导致指示器同ViewPager分离的情况）
+```
+  <i.farmer.widget.recyclerview.tabs.RecyclerTabView
+    android:id="@+id/mTabView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/x20"
+    android:paddingBottom="@dimen/x10"
+    app:indicatorColor="#1A1A1A"
+    app:indicatorHeight="@dimen/x10"
+    app:indicatorIncludeSpacing="true"
+    app:indicatorSmoothCircle="true"
+    app:indicatorStyle="triangle"
+    app:indicatorWidth="@dimen/x28"
+    app:tabItemSpacing="@dimen/x40"
+    app:tabPadding="@dimen/x60" />
+```
+#### 6.块状背景指示器（圆角矩形）
+```
+  <i.farmer.widget.recyclerview.tabs.RecyclerTabView
+    android:id="@+id/mTabView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="@dimen/x20"
+    app:indicatorColor="#991A1A1A"
+    app:indicatorPadding="@dimen/x30"
+    app:indicatorStyle="block"
+    app:tabItemSpacing="@dimen/x40"
+    app:tabPadding="@dimen/x60" />
+```
+#### 7.属性说明
+```
+  a.指示器方向
+    android:orientation 默认横向 horizontal｜vertical
+  b.指示器类型 indicatorStyle
+    none        需要自定义指示器，需继承i.farmer.widget.recyclerview.tabs.RecyclerTabViewIndicator
+    line        线条指示器 (默认)
+    fullLine    同tabItem等宽线条指示器（可左右增加indicatorPadding长度）
+    triangle    三角形指示器（滑动过程中，可选变化为圆形指示器）
+    block       块状背景指示器（现在为圆角）
+  c.指示器颜色
+    indicatorColor
+  d.指示器宽度
+    indicatorWidth  （在横向时，为指示器长度，竖向时为指示器厚度）
+    （块状指示器无效，等宽线条指示器横向时无效）
+  e.指示器高度
+    indicatorHeight （在横向时，为指示器厚度，竖向时为指示器长度），其中fullLine时，不需要传入指示器长度
+    （块状指示器无效，等宽线条指示器竖向时无效）
+  f.指示器移动过程中是否有差值变化（三角形指示器无效）
+    indicatorGap    默认有 never｜always
+  g.block、fullLine指示器 是否给等宽指示器增加左右两边长度
+    indicatorPadding  不能小于0，不能大于tabItemSpacing，默认为0
+  h.移动过程中，是否使用圆形指示器，只有在三角形指示器的时候有小
+    indicatorSmoothCircle 默认为false，true｜false
+  i.tabItem间距
+    tabItemSpacing
+  j.整个RecyclerTabView容器开始、结束间距
+    tabPaddingStart｜tabPaddingEnd｜tabPadding
+    优先级 tabPaddingStart>tabPadding  tabPaddingEnd>tabPadding
 ```

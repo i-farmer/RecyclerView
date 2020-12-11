@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
  * @created-time 2020/12/8 4:49 PM
  * @description 指示器
  */
-abstract class RecyclerTabViewIndicator extends RecyclerView.ItemDecoration {
+public abstract class RecyclerTabViewIndicator extends RecyclerView.ItemDecoration {
     private boolean drawOver;
     private boolean includeGap;                 // 指示器滑动过程中是否包含gap差值计算
     private int scrollPosition;                 // 当前position
@@ -150,7 +150,7 @@ abstract class RecyclerTabViewIndicator extends RecyclerView.ItemDecoration {
     /**
      * 获取指示器大小
      *
-     * @param horizontal 排版方向
+     * @param horizontal 是否横向
      * @param start      positionView的起始点
      * @param end        positionView的结束点、nextView的起始点
      * @return
@@ -160,9 +160,9 @@ abstract class RecyclerTabViewIndicator extends RecyclerView.ItemDecoration {
     /**
      * 获取指示器在滑动过程中的size变化差值
      *
-     * @param size           指示器大小
-     * @param nextSize       指示器大小
-     * @param distance
+     * @param size           当前position指示器大小
+     * @param nextSize       下一个View的指示器大小
+     * @param distance       两个view中间点的距离（即：移动距离）
      * @param positionOffset
      * @return
      */
@@ -186,6 +186,13 @@ abstract class RecyclerTabViewIndicator extends RecyclerView.ItemDecoration {
         }
     }
 
+    /**
+     * 获取View的起始位置
+     *
+     * @param view
+     * @param horizontal 是否横向
+     * @return
+     */
     protected float getStart(View view, boolean horizontal) {
         checkView(view);
         if (horizontal) {
@@ -195,6 +202,13 @@ abstract class RecyclerTabViewIndicator extends RecyclerView.ItemDecoration {
         }
     }
 
+    /**
+     * 获取View的结束位置
+     *
+     * @param view
+     * @param horizontal 是否横向
+     * @return
+     */
     protected float getEnd(View view, boolean horizontal) {
         checkView(view);
         if (horizontal) {
@@ -204,6 +218,13 @@ abstract class RecyclerTabViewIndicator extends RecyclerView.ItemDecoration {
         }
     }
 
+    /**
+     * 获取某View的尺寸大小
+     *
+     * @param view
+     * @param horizontal 是否横向
+     * @return
+     */
     protected float getSize(View view, boolean horizontal) {
         checkView(view);
         if (horizontal) {

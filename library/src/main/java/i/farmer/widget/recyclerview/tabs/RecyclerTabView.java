@@ -60,11 +60,11 @@ public class RecyclerTabView extends RecyclerView implements RecyclerTabViewAdap
         int indicatorWidth = 0;
         int indicatorHeight = 0;
         boolean indicatorSmoothCircle = false;      // 在滑动过程中，是否绘制小圆点指示器，目前只有在三角形指示器中可用
-        int itemSpacing = 0;                        // 每个item之间的间距
+        int tabItemSpacing = 0;                     // 每个item之间的间距
         int tabPaddingStart = 0;                    // 整个tab的paddingStart
         int tabPaddingEnd = 0;                      // 整个tab的paddingEnd
+        int indicatorPadding = 0;                   // fullLine、block指示器，左右两边间距，不能大于itemSpacing，不指定的话等于itemSpacing的一半
         boolean includeGap = true;                  // 指示器滑动过程中是否包含gap差值计算
-        boolean includeSpacing = false;             // indicatorStyle=fullLine时，是否算上间隔
         if (null != attrs) {
             TypedArray typedArray = null;
             try {
@@ -76,12 +76,13 @@ public class RecyclerTabView extends RecyclerView implements RecyclerTabViewAdap
                 indicatorWidth = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_indicatorWidth, indicatorWidth);
                 indicatorHeight = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_indicatorHeight, indicatorHeight);
                 indicatorSmoothCircle = typedArray.getBoolean(R.styleable.RecyclerTabView_indicatorSmoothCircle, indicatorSmoothCircle);
-                itemSpacing = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_itemSpacing, itemSpacing);
+                tabItemSpacing = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_tabItemSpacing, tabItemSpacing);
+                indicatorPadding = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_indicatorPadding, indicatorPadding);
                 int tabPadding = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_tabPadding, 0);
                 tabPaddingStart = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_tabPaddingStart, tabPadding);
                 tabPaddingEnd = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_tabPaddingEnd, tabPadding);
-                includeGap = typedArray.getInt(R.styleable.RecyclerTabView_indicatorGap, 0) == 1;
-                includeSpacing = typedArray.getBoolean(R.styleable.RecyclerTabView_indicatorIncludeSpacing, includeSpacing);
+                includeGap = typedArray.getInt(R.styleable.RecyclerTabView_indicatorGap, 1) == 1;
+
             } catch (Exception ex) {
 
             } finally {
@@ -106,21 +107,33 @@ public class RecyclerTabView extends RecyclerView implements RecyclerTabViewAdap
         mLayoutManager.setOrientation(mOrientation);
         setLayoutManager(mLayoutManager);
         // 增加指示器
+        if (indicatorPadding < 0) {
+            // 默认不增加
+            indicatorPadding = 0;
+        } else if (indicatorPadding > tabItemSpacing) {
+            // 不能超出间距
+            indicatorPadding = tabItemSpacing;
+        }
         if (indicatorStyle == INDICATOR_STYLE_LINE) {
-            addItemDecoration(new LineIndicator(includeGap, indicatorColor, indicatorWidth, indicatorHeight, itemSpacing));
+            addItemDecoration(new LineIndicator(includeGap, indicatorColor, indicatorWidth, indicatorHeight, tabItemSpacing));
         } else if (indicatorStyle == INDICATOR_STYLE_FULL_LINE) {
-            addItemDecoration(new FullLineIndicator(includeGap, includeSpacing, indicatorColor, indicatorWidth, indicatorHeight, itemSpacing));
+            if (indicatorPadding <= 0) {
+                indicatorPadding = tabItemSpacing / 2;
+            } else if (indicatorPadding > tabItemSpacing) {
+                indicatorPadding = tabItemSpacing;
+            }
+            addItemDecoration(new FullLineIndicator(includeGap, indicatorPadding, indicatorColor, indicatorWidth, indicatorHeight, tabItemSpacing));
         } else if (indicatorStyle == INDICATOR_STYLE_TRIANGLE) {
-            addItemDecoration(new TriangleIndicator(indicatorSmoothCircle, indicatorColor, indicatorWidth, indicatorHeight, itemSpacing));
+            addItemDecoration(new TriangleIndicator(indicatorSmoothCircle, indicatorColor, indicatorWidth, indicatorHeight, tabItemSpacing));
         } else if (indicatorStyle == INDICATOR_STYLE_BLOCK) {
-            addItemDecoration(new BlockIndicator(includeGap, indicatorColor, itemSpacing));
+            addItemDecoration(new BlockIndicator(includeGap, indicatorColor, indicatorPadding, tabItemSpacing));
         }
         // 增加间距
-        if (itemSpacing > 0 || tabPaddingStart > 0 || tabPaddingEnd > 0) {
+        if (tabItemSpacing > 0 || tabPaddingStart > 0 || tabPaddingEnd > 0) {
             if (mLayoutManager.getOrientation() == HORIZONTAL) {
-                addItemDecoration(new LinearSpacingDecoration(itemSpacing, tabPaddingStart, 0, tabPaddingEnd, 0));
+                addItemDecoration(new LinearSpacingDecoration(tabItemSpacing, tabPaddingStart, 0, tabPaddingEnd, 0));
             } else {
-                addItemDecoration(new LinearSpacingDecoration(itemSpacing, 0, tabPaddingStart, 0, tabPaddingEnd));
+                addItemDecoration(new LinearSpacingDecoration(tabItemSpacing, 0, tabPaddingStart, 0, tabPaddingEnd));
             }
         }
         // 不需要动画
@@ -275,18 +288,19 @@ public class RecyclerTabView extends RecyclerView implements RecyclerTabViewAdap
      * 适配器点击事件（直接选中）
      *
      * @param position
+     * @param smoothScroll 是否顺滑
      */
     @Override
-    public void setCurrentItem(int position) {
+    public void setCurrentItem(int position, boolean smoothScroll) {
         if (null != callback
                 && ((RecyclerTabViewAdapter) getAdapter()).getIndicatorPosition() == position) {
             // 重复点击
             callback.onTabItemReClick(position);
         }
         if (null != mViewPager) {
-            mViewPager.setCurrentItem(position);
+            mViewPager.setCurrentItem(position, smoothScroll);
         } else if (null != mViewPager2) {
-            mViewPager2.setCurrentItem(position);
+            mViewPager2.setCurrentItem(position, smoothScroll);
         }
     }
 
