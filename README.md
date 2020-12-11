@@ -1,7 +1,7 @@
 # RecyclerView
 
 ## RecyclerTabView指示器
-#### 1.代码使用，同时支持ViewPager、ViewPager2，支持横竖向
+#### 1.代码使用（同时支持ViewPager、ViewPager2，支持横竖向）
 ```
   RecyclerTabView.setAdapter(A extends RecyclerTabViewAdapter）
   RecyclerTabView.setUpWithViewPager
