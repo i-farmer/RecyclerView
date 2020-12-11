@@ -30,5 +30,10 @@
 
     <style name="RecyclerTabView.Default" parent="">
         <item name="android:orientation">horizontal</item>
+        <item name="indicatorStyle">line</item>
+        <item name="indicatorColor">#1A1A1A</item>
+        <item name="indicatorGap">always</item>
+        <item name="indicatorPadding">0dp</item>
+        <item name="indicatorSmoothCircle">false</item>
     </style>
 </resources>

@@ -31,19 +31,21 @@ public class BlockIndicator extends RecyclerTabViewIndicator {
     @Override
     protected void drawIndicator(RecyclerView parent, boolean selected, boolean horizontal, Canvas canvas, float center, float size) {
         if (horizontal) {
-            float r = (parent.getBottom() - parent.getTop()) / 2.f;
+            float height = parent.getBottom() - parent.getTop();
+            float r = height / 2.f;
             canvas.drawRoundRect(center - size / 2.f,
-                    parent.getTop(),
+                    0,
                     center + size / 2.f,
-                    parent.getBottom(),
+                    height,
                     r,
                     r,
                     mIndicatorPaint);
         } else {
-            float r = (parent.getRight() - parent.getLeft()) / 2.f;
-            canvas.drawRoundRect(parent.getLeft(),
+            float width = parent.getRight() - parent.getLeft();
+            float r = width / 2.f;
+            canvas.drawRoundRect(0,
                     center - size / 2.f,
-                    parent.getRight(),
+                    width,
                     center + size / 2.f,
                     r,
                     r,

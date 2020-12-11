@@ -285,6 +285,15 @@ public class RecyclerTabView extends RecyclerView implements RecyclerTabViewAdap
     }
 
     /**
+     * 是否可以滚动
+     *
+     * @return
+     */
+    public boolean isScrollEnabled() {
+        return mScrollEnabled;
+    }
+
+    /**
      * 适配器点击事件（直接选中）
      *
      * @param position

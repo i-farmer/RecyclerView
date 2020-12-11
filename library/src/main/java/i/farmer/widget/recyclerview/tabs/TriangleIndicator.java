@@ -49,24 +49,28 @@ class TriangleIndicator extends RecyclerTabViewIndicator {
             // 箭头
             this.mIndicatorPath.reset();
             if (horizontal) {
-                this.mIndicatorPath.moveTo(center - size / 2.f, parent.getBottom());
-                this.mIndicatorPath.lineTo(center + size / 2.f, parent.getBottom());
-                this.mIndicatorPath.lineTo(center, parent.getBottom() - mIndicatorHeight);
+                float height = parent.getBottom() - parent.getTop();
+                this.mIndicatorPath.moveTo(center - size / 2.f, height);
+                this.mIndicatorPath.lineTo(center + size / 2.f, height);
+                this.mIndicatorPath.lineTo(center, height - mIndicatorHeight);
             } else {
-                this.mIndicatorPath.moveTo(parent.getRight(), center - size / 2.f);
-                this.mIndicatorPath.lineTo(parent.getRight(), center + size / 2.f);
-                this.mIndicatorPath.lineTo(parent.getRight() - mIndicatorWidth, center);
+                float width = parent.getRight() - parent.getLeft();
+                this.mIndicatorPath.moveTo(width, center - size / 2.f);
+                this.mIndicatorPath.lineTo(width, center + size / 2.f);
+                this.mIndicatorPath.lineTo(width - mIndicatorWidth, center);
             }
             this.mIndicatorPath.close();
             canvas.drawPath(this.mIndicatorPath, this.mIndicatorPaint);
         } else {
             // 滑动过程中
             if (horizontal) {
+                float height = parent.getBottom() - parent.getTop();
                 float r = mIndicatorHeight / 2.f;
-                canvas.drawCircle(center, parent.getBottom() - r, r, this.mIndicatorPaint);
+                canvas.drawCircle(center, height - r, r, this.mIndicatorPaint);
             } else {
+                float width = parent.getRight() - parent.getLeft();
                 float r = mIndicatorWidth / 2.f;
-                canvas.drawCircle(parent.getRight() - r, center, r, this.mIndicatorPaint);
+                canvas.drawCircle(width - r, center, r, this.mIndicatorPaint);
             }
         }
     }
