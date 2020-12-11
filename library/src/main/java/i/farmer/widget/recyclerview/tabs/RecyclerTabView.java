@@ -34,6 +34,11 @@ public class RecyclerTabView extends RecyclerView implements RecyclerTabViewAdap
     private final int INDICATOR_STYLE_TRIANGLE = 3;                 // 三角指示器
     private final int INDICATOR_STYLE_BLOCK = 4;                    // 块状背景指示器
 
+    public static final int INDICATOR_GRAVITY_LEFT = -1;            // 指示器位置
+    public static final int INDICATOR_GRAVITY_CENTER = 0;
+    public static final int INDICATOR_GRAVITY_RIGHT = 1;
+
+
     protected boolean mScrollEnabled = true;                        // tab是否可以滚动
     private int mOrientation = HORIZONTAL;
     private LinearLayoutManager mLayoutManager;                     // layoutManager
@@ -65,6 +70,8 @@ public class RecyclerTabView extends RecyclerView implements RecyclerTabViewAdap
         int tabPaddingEnd = 0;                      // 整个tab的paddingEnd
         int indicatorPadding = 0;                   // fullLine、block指示器，左右两边间距，不能大于itemSpacing，不指定的话等于itemSpacing的一半
         boolean includeGap = true;                  // 指示器滑动过程中是否包含gap差值计算
+        int indicatorGravity = INDICATOR_GRAVITY_CENTER;  // 指示器位置
+        int indicatorOffset = 0;                    // 指示器位置 偏移量
         if (null != attrs) {
             TypedArray typedArray = null;
             try {
@@ -75,14 +82,15 @@ public class RecyclerTabView extends RecyclerView implements RecyclerTabViewAdap
                 indicatorColor = typedArray.getColor(R.styleable.RecyclerTabView_indicatorColor, indicatorColor);
                 indicatorWidth = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_indicatorWidth, indicatorWidth);
                 indicatorHeight = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_indicatorHeight, indicatorHeight);
-                indicatorSmoothCircle = typedArray.getBoolean(R.styleable.RecyclerTabView_indicatorSmoothCircle, indicatorSmoothCircle);
+                indicatorSmoothCircle = typedArray.getBoolean(R.styleable.RecyclerTabView_indicatorSmoothCircle, false);
                 tabItemSpacing = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_tabItemSpacing, tabItemSpacing);
                 indicatorPadding = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_indicatorPadding, indicatorPadding);
                 int tabPadding = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_tabPadding, 0);
                 tabPaddingStart = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_tabPaddingStart, tabPadding);
                 tabPaddingEnd = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_tabPaddingEnd, tabPadding);
                 includeGap = typedArray.getInt(R.styleable.RecyclerTabView_indicatorGap, 1) == 1;
-
+                indicatorGravity = typedArray.getInt(R.styleable.RecyclerTabView_indicatorGravity, indicatorGravity);
+                indicatorOffset = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_indicatorOffset, indicatorOffset);
             } catch (Exception ex) {
 
             } finally {
@@ -115,25 +123,31 @@ public class RecyclerTabView extends RecyclerView implements RecyclerTabViewAdap
             indicatorPadding = tabItemSpacing;
         }
         if (indicatorStyle == INDICATOR_STYLE_LINE) {
-            addItemDecoration(new LineIndicator(includeGap, indicatorColor, indicatorWidth, indicatorHeight, tabItemSpacing));
+            addItemDecoration(new LineIndicator(includeGap, indicatorColor, indicatorWidth,
+                    indicatorHeight, tabItemSpacing, indicatorGravity, indicatorOffset));
         } else if (indicatorStyle == INDICATOR_STYLE_FULL_LINE) {
             if (indicatorPadding <= 0) {
                 indicatorPadding = tabItemSpacing / 2;
             } else if (indicatorPadding > tabItemSpacing) {
                 indicatorPadding = tabItemSpacing;
             }
-            addItemDecoration(new FullLineIndicator(includeGap, indicatorPadding, indicatorColor, indicatorWidth, indicatorHeight, tabItemSpacing));
+            addItemDecoration(new FullLineIndicator(includeGap, indicatorPadding, indicatorColor,
+                    indicatorWidth, indicatorHeight, tabItemSpacing));
         } else if (indicatorStyle == INDICATOR_STYLE_TRIANGLE) {
-            addItemDecoration(new TriangleIndicator(indicatorSmoothCircle, indicatorColor, indicatorWidth, indicatorHeight, tabItemSpacing));
+            addItemDecoration(new TriangleIndicator(indicatorSmoothCircle, indicatorColor,
+                    indicatorWidth, indicatorHeight, tabItemSpacing));
         } else if (indicatorStyle == INDICATOR_STYLE_BLOCK) {
-            addItemDecoration(new BlockIndicator(includeGap, indicatorColor, indicatorPadding, tabItemSpacing));
+            addItemDecoration(new BlockIndicator(includeGap, indicatorColor, indicatorPadding,
+                    tabItemSpacing));
         }
         // 增加间距
         if (tabItemSpacing > 0 || tabPaddingStart > 0 || tabPaddingEnd > 0) {
             if (mLayoutManager.getOrientation() == HORIZONTAL) {
-                addItemDecoration(new LinearSpacingDecoration(tabItemSpacing, tabPaddingStart, 0, tabPaddingEnd, 0));
+                addItemDecoration(new LinearSpacingDecoration(tabItemSpacing, tabPaddingStart,
+                        0, tabPaddingEnd, 0));
             } else {
-                addItemDecoration(new LinearSpacingDecoration(tabItemSpacing, 0, tabPaddingStart, 0, tabPaddingEnd));
+                addItemDecoration(new LinearSpacingDecoration(tabItemSpacing, 0, tabPaddingStart,
+                        0, tabPaddingEnd));
             }
         }
         // 不需要动画

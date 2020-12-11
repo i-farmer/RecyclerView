@@ -130,7 +130,7 @@ public abstract class RecyclerTabViewIndicator extends RecyclerView.ItemDecorati
             }
         }
         // distance，是position与position+1之间的中间点距离，另外加上item间隔
-        final float distance = (positionNextStart + positionNextEnd - positionStart - positionEnd) / 2.f;
+        final float distance = getMoveDistance(positionStart, positionEnd, positionNextStart, positionNextEnd);
         // 当前指示器大小
         final float size = getIndicatorSize(horizontal, positionStart, positionEnd);
         // 下一个指示器大小
@@ -142,9 +142,32 @@ public abstract class RecyclerTabViewIndicator extends RecyclerView.ItemDecorati
         }
 
         // 计算指示器中间点
-        float center = (positionEnd + positionStart) / 2.f + distance * positionOffset;
+        float center = getMoveStartCenter(size, positionStart, positionEnd, positionNextStart, positionNextEnd) + +distance * positionOffset;
 
         drawIndicator(parent, positionOffset == 0, horizontal, c, center, size + gap);
+    }
+
+    /**
+     * 获取移动距离
+     *
+     * @return
+     */
+    protected float getMoveDistance(float positionStart, float positionEnd, float positionNextStart, float positionNextEnd) {
+        return (positionNextStart + positionNextEnd - positionStart - positionEnd) / 2.f;
+    }
+
+    /**
+     * 获取指示器开始的中间点
+     *
+     * @param size              指示器大小
+     * @param positionStart
+     * @param positionEnd
+     * @param positionNextStart
+     * @param positionNextEnd
+     * @return
+     */
+    protected float getMoveStartCenter(float size, float positionStart, float positionEnd, float positionNextStart, float positionNextEnd) {
+        return (positionEnd + positionStart) / 2.f;
     }
 
     /**

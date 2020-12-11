@@ -17,8 +17,10 @@ import androidx.recyclerview.widget.RecyclerView;
 class LineIndicator extends RecyclerTabViewIndicator {
     private int mIndicatorWidth = 42;
     private int mIndicatorHeight = 12;
+    private int gravity;            // 位置
+    private float offset;           // 位置偏移量
 
-    public LineIndicator(boolean includeGap, @ColorInt int color, int width, int height, int spacing) {
+    public LineIndicator(boolean includeGap, @ColorInt int color, int width, int height, int spacing, int gravity, float offset) {
         super(true, includeGap, color, spacing);
         if (width > 0) {
             this.mIndicatorWidth = width;
@@ -26,6 +28,37 @@ class LineIndicator extends RecyclerTabViewIndicator {
         if (height > 0) {
             this.mIndicatorHeight = height;
         }
+        this.gravity = gravity;
+        this.offset = offset;
+    }
+
+    @Override
+    protected float getMoveDistance(float positionStart, float positionEnd, float positionNextStart, float positionNextEnd) {
+        if (gravity == RecyclerTabView.INDICATOR_GRAVITY_LEFT) {
+            // 指示器居左
+            return positionNextStart - positionStart;   // 需要算上itemSpacing
+        } else if (gravity == RecyclerTabView.INDICATOR_GRAVITY_RIGHT) {
+            // 指示器居右
+            return positionNextEnd - positionEnd;       // 需要算上itemSpacing
+        } else {
+            // 指示器居中
+            return super.getMoveDistance(positionStart, positionEnd, positionNextStart, positionNextEnd);
+        }
+    }
+
+    @Override
+    protected float getMoveStartCenter(float size, float positionStart, float positionEnd, float positionNextStart, float positionNextEnd) {
+        if (gravity == RecyclerTabView.INDICATOR_GRAVITY_LEFT) {
+            // 指示器居左
+            return positionStart + size / 2.f + offset;
+        } else if (gravity == RecyclerTabView.INDICATOR_GRAVITY_RIGHT) {
+            // 指示器居右
+            return positionEnd - size / 2.f - offset;
+        } else {
+            // 指示器居中
+            return super.getMoveStartCenter(size, positionStart, positionEnd, positionNextStart, positionNextEnd);
+        }
+
     }
 
     @Override

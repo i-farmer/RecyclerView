@@ -10,7 +10,8 @@ class FullLineIndicator extends LineIndicator {
 
     public FullLineIndicator(boolean includeGap, int indicatorPadding,
                              int color, int width, int height, int spacing) {
-        super(includeGap, color, width, height, spacing);
+        super(includeGap, color, width, height,
+                spacing, RecyclerTabView.INDICATOR_GRAVITY_CENTER, 0);
         this.indicatorPadding = indicatorPadding;
     }
 

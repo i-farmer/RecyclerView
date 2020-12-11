@@ -11,8 +11,10 @@
         android:layout_height="wrap_content"
         android:paddingVertical="@dimen/x20"
         app:indicatorColor="#991A1A1A"
+        app:indicatorGravity="left"
+        app:indicatorOffset="-4dp"
         app:indicatorPadding="@dimen/x30"
-        app:indicatorStyle="block"
+        app:indicatorStyle="line"
         app:tabItemSpacing="@dimen/x40"
         app:tabPadding="@dimen/x60" />
 

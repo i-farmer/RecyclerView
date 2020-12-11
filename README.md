@@ -36,14 +36,19 @@
     android:paddingBottom="@dimen/x10"
     app:indicatorColor="#1A1A1A"
     app:indicatorGap="always"
+    app:indicatorGravity="left"
+    app:indicatorOffset="@dimen/x4"
     app:indicatorHeight="@dimen/x10"
     app:indicatorStyle="line"
     app:indicatorWidth="@dimen/x28"
     app:tabItemSpacing="@dimen/x40"
     app:tabPaddingEnd="@dimen/x60"
     app:tabPaddingStart="@dimen/x60" />
-    其中：如果是横向使用android:paddingTop、android:paddingBottom，否则使用
+    其中：
+    a. 如果是横向使用android:paddingTop、android:paddingBottom，否则使用
     android:paddingLeft、android:paddingRight，来实现item与整个TabView的起始键距、与指示器之间的间距
+    b. indicatorGravity指指示器对齐方式，默认居中，indicatorOffset在对齐方式为居中时无效
+    
 ```
 #### 4.同文字等宽的线条指示器
 ```
@@ -92,31 +97,39 @@
 ```
 #### 7.属性说明
 ```
-  a.指示器方向
+  a. 指示器方向
     android:orientation 默认横向 horizontal｜vertical
-  b.指示器类型 indicatorStyle
+  b. 指示器类型 indicatorStyle
     none        需要自定义指示器，需继承i.farmer.widget.recyclerview.tabs.RecyclerTabViewIndicator
     line        线条指示器 (默认)
     fullLine    同tabItem等宽线条指示器（可左右增加indicatorPadding长度）
     triangle    三角形指示器（滑动过程中，可选变化为圆形指示器）
     block       块状背景指示器（现在为圆角）
-  c.指示器颜色
+  c. 指示器颜色
     indicatorColor
-  d.指示器宽度
+  d. 指示器宽度
     indicatorWidth  （在横向时，为指示器长度，竖向时为指示器厚度）
     （块状指示器无效，等宽线条指示器横向时无效）
-  e.指示器高度
+  e. 指示器高度
     indicatorHeight （在横向时，为指示器厚度，竖向时为指示器长度），其中fullLine时，不需要传入指示器长度
     （块状指示器无效，等宽线条指示器竖向时无效）
-  f.指示器移动过程中是否有差值变化（三角形指示器无效）
+  f. 指示器移动过程中是否有差值变化（三角形指示器无效）
     indicatorGap    默认有 never｜always
-  g.block、fullLine指示器 是否给等宽指示器增加左右两边长度
+  g. block、fullLine指示器 是否给等宽指示器增加左右两边长度
     indicatorPadding  不能小于0，不能大于tabItemSpacing，默认为0
-  h.移动过程中，是否使用圆形指示器，只有在三角形指示器的时候有小
+  h. 移动过程中，是否使用圆形指示器，只有在三角形指示器的时候有小
     indicatorSmoothCircle 默认为false，true｜false
-  i.tabItem间距
+  i. tabItem间距
     tabItemSpacing
-  j.整个RecyclerTabView容器开始、结束间距
+  j. 整个RecyclerTabView容器开始、结束间距
     tabPaddingStart｜tabPaddingEnd｜tabPadding
     优先级 tabPaddingStart>tabPadding  tabPaddingEnd>tabPadding
+  k. 指示器对齐方式
+    indicatorGravity 默认居中left|center|right
+    （只有在线条指示器line有效）
+  l. 指示器偏移量
+    indicatorOffset 在indicatorGravity为left|right时对指示器进行偏移
+    其中 left时，大于0往后偏移、小于0往前偏移
+         right时，大于0往前偏移，小于0往后偏移
+         center时，无效
 ```

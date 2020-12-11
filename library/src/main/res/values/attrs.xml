@@ -13,6 +13,12 @@
             <enum name="triangle" value="3" />  <!--三角形指示器-->
             <enum name="block" value="4" />  <!--块状背景指示器-->
         </attr>
+        <attr name="indicatorGravity" format="enum">   <!--指示器位置，只有在line的时候有效-->
+            <enum name="left" value="-1" />
+            <enum name="center" value="0" />
+            <enum name="right" value="1" />
+        </attr>
+        <attr name="indicatorOffset" format="dimension" /> <!--指示器位置 偏移量，配合indicatorGravity使用-->
         <attr name="indicatorColor" format="color" />
         <attr name="indicatorWidth" format="dimension" />
         <attr name="indicatorHeight" format="dimension" />
