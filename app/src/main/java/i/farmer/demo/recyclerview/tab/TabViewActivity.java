@@ -68,7 +68,7 @@ public class TabViewActivity extends AppCompatActivity {
                 } else {
                     mViewPager.setBackgroundColor(Color.parseColor("#FFFFFF"));
                     mTabView.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                    mTabView.setIndicatorColor(Color.parseColor("#1A1A1A"));
+                    mTabView.setIndicatorColor(Color.parseColor("#991A1A1A"));
                 }
             }
         });

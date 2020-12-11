@@ -22,7 +22,7 @@ import i.farmer.widget.recyclerview.manager.CenterLinearLayoutManager;
  * @created-time 2020/12/8 10:41 AM
  * @description 基于RecyclerView实现的TabLayout，同时支持横向、竖向
  */
-public class RecyclerTabView extends RecyclerView {
+public class RecyclerTabView extends RecyclerView implements RecyclerTabViewAdapter.OnRecyclerTabViewClickListener {
     private final int INDICATOR_STYLE_LINE = 1;                     // 线条指示器
     private final int INDICATOR_STYLE_FULL_LINE = 2;                // 同tabItem等宽线条指示器
     private final int INDICATOR_STYLE_TRIANGLE = 3;                 // 三角指示器
@@ -31,6 +31,9 @@ public class RecyclerTabView extends RecyclerView {
     protected boolean mScrollEnabled = true;                        // tab是否可以滚动
     private int mOrientation = HORIZONTAL;
     private LinearLayoutManager mLayoutManager;                     // layoutManager
+
+    private ViewPager mViewPager = null;                            // 关联的ViewPager，只允许关联一个
+    private ViewPager2 mViewPager2 = null;
 
     public RecyclerTabView(@NonNull Context context) {
         this(context, null);
@@ -48,7 +51,6 @@ public class RecyclerTabView extends RecyclerView {
         int indicatorColor = 0XFF1A1A1A;            // 指示器颜色
         int indicatorWidth = 0;
         int indicatorHeight = 0;
-        int indicatorPadding = 0;                   // 指示器同tabItem之间的间距
         boolean indicatorSmoothCircle = false;      // 在滑动过程中，是否绘制小圆点指示器，目前只有在三角形指示器中可用
         int itemSpacing = 0;                        // 每个item之间的间距
         int tabPaddingStart = 0;                    // 整个tab的paddingStart
@@ -65,7 +67,6 @@ public class RecyclerTabView extends RecyclerView {
                 indicatorColor = typedArray.getColor(R.styleable.RecyclerTabView_indicatorColor, indicatorColor);
                 indicatorWidth = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_indicatorWidth, indicatorWidth);
                 indicatorHeight = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_indicatorHeight, indicatorHeight);
-                indicatorPadding = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_indicatorPadding, indicatorPadding);
                 indicatorSmoothCircle = typedArray.getBoolean(R.styleable.RecyclerTabView_indicatorSmoothCircle, indicatorSmoothCircle);
                 itemSpacing = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_itemSpacing, itemSpacing);
                 int tabPadding = typedArray.getDimensionPixelOffset(R.styleable.RecyclerTabView_tabPadding, 0);
@@ -109,9 +110,9 @@ public class RecyclerTabView extends RecyclerView {
         // 增加间距
         if (itemSpacing > 0 || tabPaddingStart > 0 || tabPaddingEnd > 0) {
             if (mLayoutManager.getOrientation() == HORIZONTAL) {
-                addItemDecoration(new LinearSpacingDecoration(itemSpacing, tabPaddingStart, 0, tabPaddingEnd, indicatorPadding));
+                addItemDecoration(new LinearSpacingDecoration(itemSpacing, tabPaddingStart, 0, tabPaddingEnd, 0));
             } else {
-                addItemDecoration(new LinearSpacingDecoration(itemSpacing, 0, tabPaddingStart, indicatorPadding, tabPaddingEnd));
+                addItemDecoration(new LinearSpacingDecoration(itemSpacing, 0, tabPaddingStart, 0, tabPaddingEnd));
             }
         }
         // 不需要动画
@@ -135,103 +136,6 @@ public class RecyclerTabView extends RecyclerView {
         invalidateItemDecorations();
     }
 
-    public void setUpWithViewPager(ViewPager viewPager) {
-        if (null == viewPager || null == viewPager.getAdapter()) {
-            throw new IllegalArgumentException("ViewPager or ViewPager adapter can not be NULL!");
-        }
-        if (null == getAdapter()) {
-            throw new IllegalArgumentException("Please set RecyclerTabView adapter first.");
-        }
-        if (viewPager.getAdapter().getCount() != getAdapter().getItemCount()) {
-            throw new IllegalArgumentException("Tab item length must be the same as the page count!");
-        }
-        viewPager.addOnPageChangeListener(new ViewPagerOnPageChangeListener());
-    }
-
-    public void setUpWithViewPager2(ViewPager2 viewPager) {
-        if (null == viewPager || null == viewPager.getAdapter()) {
-            throw new IllegalArgumentException("ViewPager or ViewPager adapter can not be NULL!");
-        }
-        if (null == getAdapter()) {
-            throw new IllegalArgumentException("Please set RecyclerTabView adapter first.");
-        }
-        if (viewPager.getAdapter().getItemCount() != getAdapter().getItemCount()) {
-            throw new IllegalArgumentException("Tab item length must be the same as the page count!");
-        }
-        viewPager.registerOnPageChangeCallback(new ViewPager2OnPageChangeCallback());
-    }
-
-    class ViewPager2OnPageChangeCallback extends ViewPager2.OnPageChangeCallback {
-
-        private int mScrollState;
-
-        @Override
-        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            RecyclerTabView.this.scrollToTabIndicator(position, positionOffset);
-        }
-
-        @Override
-        public void onPageScrollStateChanged(int state) {
-            mScrollState = state;
-        }
-
-        @Override
-        public void onPageSelected(int position) {
-            RecyclerTabView.this.onPageSelected(mScrollState == ViewPager2.SCROLL_STATE_IDLE, position);
-        }
-    }
-
-    class ViewPagerOnPageChangeListener implements ViewPager.OnPageChangeListener {
-
-        private int mScrollState;
-
-        @Override
-        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            RecyclerTabView.this.scrollToTabIndicator(position, positionOffset);
-        }
-
-        @Override
-        public void onPageScrollStateChanged(int state) {
-            mScrollState = state;
-        }
-
-        @Override
-        public void onPageSelected(int position) {
-            RecyclerTabView.this.onPageSelected(mScrollState == ViewPager.SCROLL_STATE_IDLE, position);
-        }
-    }
-
-    /**
-     * 当监听ViewPager、ViewPager2选中page的时候
-     *
-     * @param IDLE
-     * @param position
-     */
-    private void onPageSelected(boolean IDLE, int position) {
-        RecyclerTabViewAdapter adapter = (RecyclerTabViewAdapter) RecyclerTabView.this.getAdapter();
-        if (adapter.getIndicatorPosition() != position) {
-            adapter.setCurrentIndicatorPosition(position);
-            if (IDLE) {
-                this.scrollToTabIndicator(position, 0);  // 绘制指示器
-            }
-            postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    smoothScrollToPosition(position);  // 滚动到目标
-                }
-            }, 200);
-        }
-    }
-
-    /**
-     * 设置是否可以滚动
-     *
-     * @param enabled
-     */
-    public void setScrollEnabled(boolean enabled) {
-        this.mScrollEnabled = enabled;
-    }
-
     @Override
     public void setAdapter(@Nullable Adapter adapter) {
         if (null == adapter) {
@@ -244,15 +148,129 @@ public class RecyclerTabView extends RecyclerView {
     }
 
     /**
-     * 直接选中
+     * 关联ViewPager
+     *
+     * @param viewPager
+     * @see ViewPager
+     */
+    public void setUpWithViewPager(ViewPager viewPager) {
+        if (null == viewPager || null == viewPager.getAdapter()) {
+            throw new IllegalArgumentException("ViewPager or ViewPager adapter can not be NULL!");
+        }
+        if (null == getAdapter()) {
+            throw new IllegalArgumentException("Please set RecyclerTabView adapter first.");
+        }
+        if (viewPager.getAdapter().getCount() != getAdapter().getItemCount()) {
+            throw new IllegalArgumentException("Tab item length must be the same as the page count!");
+        }
+        clearAttach();
+        this.mViewPager = viewPager;
+        this.mViewPager.addOnPageChangeListener(getOnPageChangeCallback());
+        ((RecyclerTabViewAdapter) getAdapter()).setClickListener(this);
+    }
+
+    /**
+     * 关联ViewPager2
+     *
+     * @param viewPager
+     * @see ViewPager2
+     */
+    public void setUpWithViewPager2(ViewPager2 viewPager) {
+        if (null == viewPager || null == viewPager.getAdapter()) {
+            throw new IllegalArgumentException("ViewPager or ViewPager adapter can not be NULL!");
+        }
+        if (null == getAdapter()) {
+            throw new IllegalArgumentException("Please set RecyclerTabView adapter first.");
+        }
+        if (viewPager.getAdapter().getItemCount() != getAdapter().getItemCount()) {
+            throw new IllegalArgumentException("Tab item length must be the same as the page count!");
+        }
+        clearAttach();
+        this.mViewPager2 = viewPager;
+        this.mViewPager2.registerOnPageChangeCallback(getOnPageChangeCallback());
+        ((RecyclerTabViewAdapter) getAdapter()).setClickListener(this);
+    }
+
+    /**
+     * 清除关联
+     */
+    private void clearAttach() {
+        if (null != this.mViewPager) {
+            if (null != onPageChangeCallback) {
+                this.mViewPager.removeOnPageChangeListener(onPageChangeCallback);
+            }
+            this.mViewPager = null;
+        }
+        if (null != this.mViewPager2) {
+            if (null != onPageChangeCallback) {
+                this.mViewPager2.unregisterOnPageChangeCallback(onPageChangeCallback);
+            }
+            this.mViewPager2 = null;
+        }
+    }
+
+    private ViewPagerOnPageChangeCallback onPageChangeCallback;     // ViewPager、ViewPager2的监听
+
+    private ViewPagerOnPageChangeCallback getOnPageChangeCallback() {
+        if (null == onPageChangeCallback) {
+            onPageChangeCallback = new ViewPagerOnPageChangeCallback();
+        }
+        return onPageChangeCallback;
+    }
+
+    class ViewPagerOnPageChangeCallback extends ViewPager2.OnPageChangeCallback implements ViewPager.OnPageChangeListener {
+
+        private int mScrollState;
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            RecyclerTabView.this.scrollToTabIndicator(position, positionOffset);
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+            mScrollState = state;
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            RecyclerTabViewAdapter adapter = (RecyclerTabViewAdapter) RecyclerTabView.this.getAdapter();
+            if (adapter.getIndicatorPosition() != position) {
+                adapter.setIndicatorPosition(position);                         // 刷新指示器
+                if (mScrollState == ViewPager2.SCROLL_STATE_IDLE) {
+                    RecyclerTabView.this.scrollToTabIndicator(position, 0);     // 绘制指示器
+                }
+                postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        smoothScrollToPosition(position);                       // 滚动到目标
+                    }
+                }, 200);
+            }
+        }
+    }
+
+    /**
+     * 设置是否可以滚动
+     *
+     * @param enabled
+     */
+    public void setScrollEnabled(boolean enabled) {
+        this.mScrollEnabled = enabled;
+    }
+
+    /**
+     * 适配器点击事件（直接选中）
      *
      * @param position
      */
+    @Override
     public void setCurrentItem(int position) {
-        scrollToTabIndicator(position, 0);
-
-        ((RecyclerTabViewAdapter) getAdapter()).setCurrentIndicatorPosition(position);      // 选中
-        getAdapter().notifyDataSetChanged();
+        if (null != mViewPager) {
+            mViewPager.setCurrentItem(position);
+        } else if (null != mViewPager2) {
+            mViewPager2.setCurrentItem(position);
+        }
     }
 
     /**

@@ -1,17 +1,15 @@
-
 package i.farmer.demo.recyclerview.tab.adapter;
 
-import android.view.LayoutInflater;
+import android.graphics.Color;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
 import i.farmer.demo.recyclerview.R;
+import i.farmer.demo.recyclerview.utils.ButtonClickUtil;
 import i.farmer.widget.recyclerview.tabs.RecyclerTabViewAdapter;
 
 /**
@@ -19,53 +17,26 @@ import i.farmer.widget.recyclerview.tabs.RecyclerTabViewAdapter;
  * @created-time 2020/12/4 11:30 AM
  * @description
  */
-public class TabItemAdapter extends RecyclerTabViewAdapter<TabItemAdapter.TabItemHolder> {
-    private LayoutInflater mLayoutInflater;
-    private int indicatorPosition = 0;
-    private List<String> mData;
+public class TabItemAdapter extends RecyclerTabViewAdapter<String> {
 
     public TabItemAdapter(List<String> data) {
-        this.mData = data;
+        super(R.layout.item_tab, data);
     }
 
     @Override
-    public void setCurrentIndicatorPosition(int indicatorPosition) {
-        this.indicatorPosition = indicatorPosition;
+    protected void onBindData(@NonNull RecyclerTabViewHolder holder, String data, boolean selected, int position) {
+        TextView view = (TextView) holder.itemView;
+        view.setText(data);
+        view.setTextColor(Color.parseColor(selected ? "#1A1A1A" : "#999999"));
+        ButtonClickUtil.setAlphaChange(view);
+        view.setClickable(selected);
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickListener.setCurrentItem(position);
+            }
+        });
     }
 
-    @Override
-    public int getIndicatorPosition() {
-        return indicatorPosition;
-    }
-
-    @NonNull
-    @Override
-    public TabItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (null == mLayoutInflater) {
-            mLayoutInflater = LayoutInflater.from(parent.getContext());
-        }
-        View itemView = mLayoutInflater.inflate(R.layout.item_tab, parent, false);
-        return new TabItemHolder(itemView);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull TabItemHolder holder, int position) {
-        holder.bind(mData.get(position));
-    }
-
-    @Override
-    public int getItemCount() {
-        return null == mData ? 0 : mData.size();
-    }
-
-    public class TabItemHolder extends RecyclerView.ViewHolder {
-        public TabItemHolder(@NonNull View itemView) {
-            super(itemView);
-        }
-
-        public void bind(String title) {
-            ((TextView) itemView).setText(title);
-        }
-    }
 }
 

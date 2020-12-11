@@ -16,6 +16,13 @@ public class LinearSpacingDecoration extends RecyclerView.ItemDecoration {
     private int itemSpacing;            // 每个item之间的间距
     private int paddingLeft, paddingTop, paddingRight, paddingBottom;           // 整个tab的padding
 
+    /**
+     * @param itemSpacing   item间距
+     * @param paddingLeft   整个RecyclerView的paddingLeft，以下以此类推
+     * @param paddingTop
+     * @param paddingRight
+     * @param paddingBottom
+     */
     public LinearSpacingDecoration(int itemSpacing, int paddingLeft, int paddingTop, int paddingRight, int paddingBottom) {
         this.itemSpacing = itemSpacing;
         this.paddingLeft = paddingLeft;

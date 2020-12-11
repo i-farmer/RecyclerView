@@ -12,12 +12,21 @@
         android:layout_height="wrap_content"
         android:background="@android:color/white"
         android:orientation="horizontal"
+        android:paddingTop="@dimen/x20"
+        android:paddingBottom="@dimen/x10"
         app:indicatorColor="#f00"
+        app:indicatorGap="always"
         app:indicatorHeight="@dimen/x12"
-        app:indicatorStyle="line"
+        app:indicatorIncludeSpacing="true"
+        app:indicatorStyle="block"
         app:indicatorWidth="@dimen/x28"
         app:itemSpacing="@dimen/x40"
         app:tabPadding="@dimen/x32" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#EDEDED" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/mViewPager"
