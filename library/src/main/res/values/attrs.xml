@@ -4,6 +4,7 @@
     <attr name="tabPaddingStart" format="dimension" />
     <attr name="tabPaddingEnd" format="dimension" />
     <attr name="tabPadding" format="dimension" />
+    <attr name="loop" format="boolean" />
     <declare-styleable name="RecyclerTabView">
         <attr name="android:orientation" />
         <attr name="indicatorStyle" format="enum">
@@ -42,4 +43,24 @@
         <item name="indicatorPadding">0dp</item>
         <item name="indicatorSmoothCircle">false</item>
     </style>
+
+    <declare-styleable name="RecyclerWheelView">
+        <attr name="android:orientation" />
+        <attr name="android:unselectedAlpha" />
+        <attr name="loop" />
+        <attr name="visibleCount" format="integer" />
+        <attr name="unselectedScaleMode" format="enum">
+            <enum name="normal" value="1" />
+            <enum name="scale" value="2" />
+        </attr>
+        <attr name="highlightBackgroundColor" format="reference|color" />
+        <attr name="highlightLineWidth" format="dimension" />
+        <attr name="highlightLineColor" format="reference|color" />
+        <attr name="highlightMarkerWidth" format="dimension" />
+        <attr name="highlightMarkerColor" format="reference|color" />
+        <attr name="android:hint" />
+        <attr name="hintTextSize" format="dimension" />
+        <attr name="android:textColorHint" />
+        <attr name="hintMarginEnd" format="dimension" />
+    </declare-styleable>
 </resources>
